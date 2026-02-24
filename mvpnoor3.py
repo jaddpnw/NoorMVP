@@ -48,7 +48,7 @@ st.markdown(
 
 # Header with spinning moon
 st.markdown('<div class="spinning-moon">🌙</div> <h1 style="display:inline;">NoorMVP</h1>', unsafe_allow_html=True)
-st.caption("Your prayer is most valuable")
+st.caption("Rememberance, the most valuable prayer")
 
 # =======================
 # API key setup
@@ -65,7 +65,7 @@ client = OpenAI(api_key=api_key)
 # App Title & Intro
 # =======================
 st.markdown("""
-Noor speaks by *Qur’an First. Hadith if askedt*.
+*Noor* brings light with *Qur’an First. Hadith if asked*.
 """)
 
 # =======================
