@@ -110,6 +110,13 @@ def get_ai_response(user_input):
 # =======================
 user_question = st.text_area("Ask for guidance:", height=150)
 
+question = st.text_input(
+    "Ask something",
+    placeholder="e.g., What does this verse mean?",
+    key="user_question",
+    max_chars=150
+)
+
 if st.button("Seek Guidance"):
     if user_question.strip():
         with st.spinner("Seeking guidance..."):
