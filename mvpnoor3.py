@@ -64,10 +64,8 @@ client = OpenAI(api_key=api_key)
 # =======================
 # App Title & Intro
 # =======================
-st.title("NoorMVP ✨")
 st.markdown("""
-Welcome! Ask for guidance on life, faith, or daily matters.
-Your answers will be *based on the Quran first and foremost*.
+Welcome! Noor's answers will be *based on the Quran first and foremost*.
 Hadith references will be provided only if specifically requested.
 """)
 
@@ -103,7 +101,7 @@ def get_ai_response(user_input):
                     "content": (
                         "You are Noor, an Islamic guidance assistant. "
                         "Be calm, structured, intelligent, and non-judgmental. "
-                        "Use Quran and authentic hadith references when relevant. "
+                        "Use Quran, and authentic hadith references only  when requested. "
                         "Provide practical advice in a welcoming, nuanced way."
                     )
                 },
@@ -121,7 +119,7 @@ def get_ai_response(user_input):
 
 guidance_prompt = st.text_area(
     "Seek Guidance",
-    placeholder="e.g. How to raise your children?\nWhat is the meaning of this verse?\nHow do I strengthen my prayer?",
+    placeholder="e.g. How to raise your children?"
     height=150
 )
 
