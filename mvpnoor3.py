@@ -65,21 +65,12 @@ client = OpenAI(api_key=api_key)
 # App Title & Intro
 # =======================
 st.markdown("""
-Welcome! Noor's answers will be *based on the Quran first and foremost*.
-Hadith references will be provided only if specifically requested.
+Noor: *Noor: Qur’an First. Hadith by Request*.
 """)
 
 # =======================
 # Prayer & Quranic content
 # =======================
-prayers = {
-    "Quran 2:201":
-        "Our Lord, grant us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.",
-    "Quran 20:114":
-        "My Lord, increase me in knowledge.",
-    "Quran 94:6":
-        "Indeed, with hardship comes ease."
-}
 
 featured_verses = [
     "Quran 39:9 — Are those who know equal to those who do not know?",
@@ -140,17 +131,8 @@ if st.button("Seek Guidance"):
 
 
 # =======================
-# Quranic Duas Section
-# =======================
-st.markdown("---")
-st.markdown("### 📖 Quranic Duas")
-for key, value in prayers.items():
-    st.markdown(f"**{key}**")
-    st.write(value)
-
-# =======================
 # Featured Verse Section
 # =======================
 st.markdown("---")
-st.markdown("### ✨ Featured Verse")
+st.markdown("####Featured Verse")
 st.write(random.choice(featured_verses))
