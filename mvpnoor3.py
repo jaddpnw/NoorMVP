@@ -65,7 +65,7 @@ client = OpenAI(api_key=api_key)
 # App Title & Intro
 # =======================
 st.markdown("""
-*Noor* brings light with *Qur’an First. Hadith if asked*.
+ *Qur’an First. Hadith if asked*.
 """)
 
 # =======================
@@ -109,7 +109,7 @@ def get_ai_response(user_input):
 # =======================
 
 guidance_prompt = st.text_area(
-    "",
+    "Ask Noor",
     placeholder="e.g. What is considered virtue?",
     height=150
 )
