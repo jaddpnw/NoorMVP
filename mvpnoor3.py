@@ -1,7 +1,12 @@
 import streamlit as st
-from openai import OpenAI
 import os
-import random
+from openai import OpenAI
+
+st.set_page_config(
+    page_title="NoorMVP",
+    page_icon="🌙",
+    layout="centered"
+)
 
 # =======================
 # Page config and styles
