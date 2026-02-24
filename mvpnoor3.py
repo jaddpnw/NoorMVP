@@ -118,6 +118,7 @@ def get_ai_response(user_input):
 # =======================
 
 guidance_prompt = st.text_area(
+    "",
     placeholder="e.g. What is considered virtue?",
     height=150
 )
