@@ -65,7 +65,7 @@ client = OpenAI(api_key=api_key)
 # App Title & Intro
 # =======================
 st.markdown("""
-Noor: *Noor: Qur’an First. Hadith by Request*.
+Noor speaks by *Qur’an First. Hadith if askedt*.
 """)
 
 # =======================
@@ -73,10 +73,10 @@ Noor: *Noor: Qur’an First. Hadith by Request*.
 # =======================
 
 featured_verses = [
-    "Quran 39:9 — Are those who know equal to those who do not know?",
+
     "Quran 5:48 — Compete in goodness.",
     "Quran 2:286 — Allah does not burden a soul beyond what it can bear.",
-    "Quran 2:177 — Who are patient in hardship, keep up prayer, and spend in charity"
+    "Quran 2:177 — Who are patient in hardship, keep up prayer, and spend in charity."
 ]
 
 # =======================
@@ -134,5 +134,4 @@ if st.button("Seek Guidance"):
 # Featured Verse Section
 # =======================
 st.markdown("---")
-st.markdown("####Featured Verse")
 st.write(random.choice(featured_verses))
