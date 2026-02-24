@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import random
 from openai import OpenAI
 
 st.set_page_config(
