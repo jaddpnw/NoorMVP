@@ -62,6 +62,16 @@ if not api_key:
 client = OpenAI(api_key=api_key)
 
 # =======================
+# App Title & Intro
+# =======================
+st.title("NoorMVP ✨")
+st.markdown("""
+Welcome! Ask for guidance on life, faith, or daily matters.
+Your answers will be *based on the Quran first and foremost*.
+Hadith references will be provided only if specifically requested.
+""")
+
+# =======================
 # Prayer & Quranic content
 # =======================
 prayers = {
@@ -108,23 +118,28 @@ def get_ai_response(user_input):
 # =======================
 # User Interaction
 # =======================
-user_question = st.text_area("Ask for guidance:", height=150)
 
-question = st.text_input(
-    "Ask something",
-    placeholder="e.g., What does this verse mean?",
-    key="user_question",
-    max_chars=150
+guidance_prompt = st.text_area(
+    "Seek Guidance",
+    placeholder="e.g. How to raise your children?\nWhat is the meaning of this verse?\nHow do I strengthen my prayer?",
+    height=150
 )
 
 if st.button("Seek Guidance"):
-    if user_question.strip():
-        with st.spinner("Seeking guidance..."):
-            answer = get_ai_response(user_question)
-        st.markdown("### Response")
-        st.write(answer)
+    if guidance_prompt.strip() == "":
+        st.warning("Please enter a question first.")
     else:
-        st.warning("Please enter a question.")
+        # Example API call (adjust for your implementation)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You answer based on the Quran first, and only reference Hadith when directly asked."},
+                {"role": "user", "content": guidance_prompt}
+            ]
+        )
+        st.markdown("### Your Guidance:")
+        st.write(response.choices[0].message.content)
+
 
 # =======================
 # Quranic Duas Section
