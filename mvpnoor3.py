@@ -66,7 +66,7 @@ client = OpenAI(api_key=api_key)
 # =======================
 st.markdown("""
 Noor responds *Qur’an Focused. Hadith "sayings" by request*.
-""" 
+""")
 
 # =======================
 # Prayer & Quranic content
