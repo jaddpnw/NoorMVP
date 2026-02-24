@@ -65,7 +65,7 @@ client = OpenAI(api_key=api_key)
 # App Title & Intro
 # =======================
 st.markdown("""
- *Qur’an Firsd. Hadith by request*.
+ *Qur’an First. Hadith by request*.
 """)
 
 # =======================
@@ -110,7 +110,7 @@ def get_ai_response(user_input):
 
 guidance_prompt = st.text_area(
      "Ask Noor",
-    placeholder="e.g.What are the “mysterious letters” that open 29 different chapters of the Qur’an?",
+    placeholder="e.g. What are the “mysterious letters” that appear in 29 different chapters?",
     height=150
 )
 
