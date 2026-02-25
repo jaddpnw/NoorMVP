@@ -48,7 +48,7 @@ st.markdown(
 
 # Header with spinning moon
 st.markdown('<div class="spinning-moon">🌙</div> <h1 style="display:inline;">NoorMVP</h1>', unsafe_allow_html=True)
-st.caption("Rememberance, the most valuable prayer")
+st.caption("Rememberance, the most valuable prayer.")
 
 # =======================
 # API key setup
@@ -65,7 +65,7 @@ client = OpenAI(api_key=api_key)
 # App Title & Intro
 # =======================
 st.markdown("""
- *Qur’an First. Hadith by request*.
+ *Qu'ran First. Hadith by request.*
 """)
 
 # =======================
@@ -110,8 +110,8 @@ def get_ai_response(user_input):
 
 guidance_prompt = st.text_area(
      "Ask Noor",
-    placeholder="e.g. What are the “mysterious letters” that appear in 29 different chapters?",
-    height=150
+    placeholder="e.g. What are the mysterious letters that appear in 29 different chapters?",
+    height=15
 )
 
 if st.button("Seek Guidance"):
@@ -135,3 +135,4 @@ if st.button("Seek Guidance"):
 # =======================
 st.markdown("---")
 st.write(random.choice(featured_verses))
+
