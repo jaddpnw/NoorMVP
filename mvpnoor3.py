@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import random
+import time
 from openai import OpenAI
 
 # =======================
@@ -74,18 +75,19 @@ st.markdown(
     .caption {
         font-family: Verdana, sans-serif;
         font-size: 14px;
-        color: #FFD700;
+        color: #000000;  /* blank space placeholder */
         text-transform: uppercase;
         margin-top: -5px;
+        margin-bottom: 10px;
     }
 
     .ai-guide {
         font-family: Verdana, sans-serif;
         font-size: 16px;
         font-weight: 600;
-        color: #FFC107;
-        margin-top: 10px;
-        margin-bottom: 15px;
+        color: #CCCCCC; /* silver color */
+        margin-top: 15px;
+        margin-bottom: 25px;
         text-align: center;
     }
     </style>
@@ -97,7 +99,7 @@ st.markdown(
                 <span class="noor">Noor</span><span class="mvp">MVP</span>
             </div>
         </div>
-        <div class="caption">REMEMBRANCE, YOUR MOST VALUABLE PRAYER</div>
+        <div class="caption"> </div>
         <div class="ai-guide">Noor is your AI guide, bringing <strong>LIGHT</strong> to your inquiries through the Quran.</div>
     </div>
     """,
@@ -139,10 +141,37 @@ featured_verses = [
 ]
 
 # =======================
-# AI Guidance Function
+# Session state for rotation
 # =======================
-def get_ai_response(user_input):
-    try:
+if 'placeholder_index' not in st.session_state:
+    st.session_state.placeholder_index = 0
+if 'verse_index' not in st.session_state:
+    st.session_state.verse_index = 0
+
+# =======================
+# Dynamic placeholders and verses
+# =======================
+placeholder_box = st.empty()
+verse_box = st.empty()
+
+# Use columns to separate input and button
+input_col, button_col = st.columns([4, 1])
+
+with input_col:
+    guidance_prompt = placeholder_box.text_area(
+        "Ask Noor",
+        placeholder=placeholder_prompts[st.session_state.placeholder_index],
+        height=15
+    )
+
+with button_col:
+    clicked = st.button("Seek Guidance")
+
+# =======================
+# AI response
+# =======================
+if clicked:
+    if guidance_prompt and guidance_prompt.strip():
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -152,37 +181,27 @@ def get_ai_response(user_input):
                         "You are Noor, an Islamic guidance assistant. "
                         "Be calm, structured, intelligent, and non-judgmental. "
                         "Use Quran extensively, provide Hadith references only when requested. "
-                        "Provide practical advice in a welcoming, nuanced way."
+                        "Responses should be spicy but grounded, inclusive, and spiritually insightful."
                     )
                 },
-                {"role": "user", "content": user_input}
+                {"role": "user", "content": guidance_prompt.strip()}
             ],
             temperature=0.6
         )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-# =======================
-# User Interaction
-# =======================
-guidance_prompt = st.text_area(
-    "Ask Noor",
-    placeholder=random.choice(placeholder_prompts),
-    height=15
-)
-
-if st.button("Seek Guidance"):
-    user_input_clean = guidance_prompt.strip()
-    if user_input_clean != "":
-        response = get_ai_response(user_input_clean)
         st.markdown("### Your Guidance:")
-        st.write(response)
+        st.write(response.choices[0].message.content)
     else:
         st.warning("Please enter a question first.")
 
 # =======================
-# Featured Verse Section
+# Live rotation every refresh
 # =======================
-st.markdown("---")
-st.write(random.choice(featured_verses))
+verse_box.write(featured_verses[st.session_state.verse_index])
+st.session_state.placeholder_index = (st.session_state.placeholder_index + 1) % len(placeholder_prompts)
+st.session_state.verse_index = (st.session_state.verse_index + 1) % len(featured_verses)
+
+# =======================
+# Auto refresh every 10 seconds for live rotation
+# =======================
+st.experimental_rerun()
+time.sleep(10)
