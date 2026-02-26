@@ -97,7 +97,7 @@ st.markdown(
             </div>
         </div>
         <div class="caption">REMEMBRANCE, YOUR MOST VALUABLE PRAYER</div>
-        <div class="ai-guide">Noor is your AI guide, bringing <strong>LIGHT</strong> to your inquiries through the Quran.</div>
+        <div class="ai-guide">Noor is your AI guide, bringing <strong>light</strong> to your inquiries through the Quran.</div>
     </div>
     """,
     unsafe_allow_html=True
