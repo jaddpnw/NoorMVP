@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 import random
-import time
 from openai import OpenAI
 
 # =======================
@@ -10,63 +9,72 @@ from openai import OpenAI
 st.set_page_config(
     page_title="NoorMVP",
     page_icon="🌙",
-    layout="centered"
+    layout="centered",
 )
 
 # =======================
 # Custom CSS
 # =======================
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
-
-body {
-    background-color: #000000;
-    color: #ffffff;
-}
-.stButton>button {
-    background-color: #FFD700;
-    color: black;
-    font-weight: bold;
-}
-.spinning-moon {
-    font-size: 50px;
-    display: inline-block;
-    animation: spin 5s linear infinite;
-}
-#header-title {
-    font-family: 'Roboto Slab', serif;
-    font-size: 48px;
-    display: inline;
-    color: #FFD700;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-</style>
-""", unsafe_allow_html=True)
-
-# =======================
-# Header
-# =======================
-st.markdown('<div class="spinning-moon">🌙</div> <span id="header-title">NoorMVP</span>', unsafe_allow_html=True)
-st.caption("Remembrance, the most valuable prayer.")
-st.markdown('<small style="color:#CCCCCC">Noor is your Quran-first guidance assistant, providing calm answers; Hadith referenced only when asked.</small>', unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+    
+    body {
+        background-color: #000000;
+        color: #ffffff;
+    }
+    .stButton>button {
+        background-color: #FFD700;
+        color: black;
+        font-weight: bold;
+    }
+    .spinning-moon {
+        font-size: 50px;
+        display: inline-block;
+        animation: spin 5s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    h1 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-weight: 900;
+        font-size: 60px;
+        margin: 0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # =======================
-# API Key Setup
+# Header with spinning moon
+# =======================
+st.markdown('<div class="spinning-moon">🌙</div> <h1><span style="color:#FFD700;">NOOR</span><span style="color:#CCCCCC;">MVP</span></h1>', unsafe_allow_html=True)
+st.caption("Remembrance, your most valuable prayer.")
+
+# =======================
+# Tagline / Description
+# =======================
+st.markdown(
+    '<p style="color:#CCCCCC; font-size:18px;">'
+    '<b>NOOR</b> is your AI guide, bringing <b>LIGHT</b> to your inquiries through the Quran, with Hadith referenced only when requested.'
+    '</p>',
+    unsafe_allow_html=True
+)
+
+# =======================
+# API key setup
 # =======================
 api_key = os.getenv("OPENAI_API_KEY")
+
 if not api_key:
     st.error("API key not configured. Please set OPENAI_API_KEY in your environment.")
     st.stop()
-client = OpenAI(api_key=api_key)
 
-# =======================
-# App Intro
-# =======================
-st.markdown("*Qur’an First. Hadith by request.*")
+client = OpenAI(api_key=api_key)
 
 # =======================
 # Featured Verses
@@ -75,47 +83,29 @@ featured_verses = [
     "Quran 5:48 — Compete in goodness.",
     "Quran 2:286 — Allah does not burden a soul beyond what it can bear.",
     "Quran 2:177 — Who are patient in hardship, keep up prayer, and spend in charity.",
-    "Quran 94:5-6 — Indeed, with hardship comes ease.",
-    "Quran 3:159 — Consult and be gentle in decision making.",
-    "Quran 57:18 — Charity enriches both giver and receiver.",
-    "Quran 16:90 — Justice, good conduct, and generosity are commanded.",
-    "Quran 49:13 — Humanity is diverse; God values piety above status.",
-    "Quran 2:255 — Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence.",
-    "Quran 36:36 — Exalted is He who created all pairs – from what the earth grows and from themselves and from that which they do not know.",
-    "Quran 18:109 — If the sea were ink for writing the words of my Lord, it would be exhausted before the words of my Lord were exhausted.",
-    "Quran 51:56 — I did not create jinn and humans except to worship Me.",
-    "Quran 55:1-13 — The Most Merciful / He taught the Quran / He created man / He taught him eloquence…"
+    "Quran 3:190 — Indeed, in the creation of the heavens and the earth, and the alternation of night and day are signs for those of understanding.",
+    "Quran 16:97 — Whoever does righteousness, whether male or female, while being a believer — We will surely give them a good life.",
+    "Quran 39:53 — Say, 'O My servants who have transgressed against themselves, do not despair of the mercy of Allah.'",
+    "Quran 94:5-6 — For indeed, with hardship comes ease. Indeed, with hardship comes ease."
 ]
 
 # =======================
-# Placeholder Prompts
-# =======================
-placeholder_prompts = [
-    "eg What are the mysterious letters in 29 chapters?",
-    "eg How can one stay patient in hardship according to the Quran?",
-    "eg What guidance does the Quran give about generosity?",
-    "eg How does reflection on creation deepen understanding?",
-    "eg What is one verse that inspires thoughtful action?"
-]
-placeholder_text = random.choice(placeholder_prompts)
-
-# =======================
-# AI Guidance Function (Noor Philosophy)
+# AI Guidance Function
 # =======================
 def get_ai_response(user_input):
-    system_message = (
-        "You are Noor, an Islamic guidance assistant. "
-        "Respond calmly and clearly, grounded in the Quran. "
-        "Use Hadith only if explicitly requested. "
-        "Leave space for reflection only when the answer is partial or invites deeper thought. "
-        "Encourage curiosity. Avoid absolutes, preaching, or mystical exaggeration. "
-        "Only include a note about reflecting on the verse if it genuinely adds insight."
-    )
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": system_message},
+                {
+                    "role": "system",
+                    "content": (
+                        "You are Noor, an Islamic guidance assistant. "
+                        "Be calm, structured, intelligent, and non-judgmental. "
+                        "Use Quran, and authentic Hadith references only when requested. "
+                        "Provide practical advice in a welcoming, nuanced way."
+                    )
+                },
                 {"role": "user", "content": user_input}
             ],
             temperature=0.6
@@ -128,25 +118,36 @@ def get_ai_response(user_input):
 # User Interaction
 # =======================
 guidance_prompt = st.text_area(
-    "Ask Noor",
-    placeholder=placeholder_text,
+     "Ask Noor",
+    placeholder="e.g. What are the mysterious letters that appear in 29 different chapters?",
     height=15
 )
 
 if st.button("Seek Guidance"):
-    prompt_text = guidance_prompt.strip()
-    if not prompt_text:
+    if guidance_prompt.strip() == "":
         st.warning("Please enter a question first.")
     else:
-        response_text = get_ai_response(prompt_text)
+        response_text = get_ai_response(guidance_prompt)
         st.markdown("### Your Guidance:")
         st.write(response_text)
 
 # =======================
-# Rotating Featured Verses
+# Rotating Featured Verse Section
 # =======================
 st.markdown("---")
-verse_container = st.empty()
-for _ in range(20):  # rotates 20 times; adjust as needed
-    verse_container.write(random.choice(featured_verses))
-    time.sleep(5)
+st.markdown(
+    f'<p style="text-align:center; font-size:16px; color:#CCCCCC;">{random.choice(featured_verses)}</p>',
+    unsafe_allow_html=True
+)
+
+# =======================
+# Donation Section
+# =======================
+st.markdown("---")
+st.markdown(
+    '<div style="text-align:center; color:#CCCCCC;">'
+    'Support Noor if it helps you: '
+    '<a href="https://www.paypal.com/donate?hosted_button_id=YOUR_BUTTON_ID" target="_blank" style="color:#FFD700;">Donate</a>'
+    '</div>',
+    unsafe_allow_html=True
+)
