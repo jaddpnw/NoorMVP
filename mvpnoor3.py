@@ -19,30 +19,50 @@ st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-    
+
     body {
         background-color: #000000;
         color: #ffffff;
     }
+
     .stButton>button {
         background-color: #FFD700;
         color: black;
         font-weight: bold;
     }
+
     .spinning-moon {
         font-size: 50px;
         display: inline-block;
         animation: spin 5s linear infinite;
     }
+
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
     h1 {
         font-family: 'Bebas Neue', sans-serif;
         font-weight: 900;
         font-size: 60px;
         margin: 0;
+    }
+
+    /* Floating Noor avatar */
+    .noor-avatar {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .noor-avatar:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px #FFD700;
     }
     </style>
     """,
@@ -50,23 +70,23 @@ st.markdown(
 )
 
 # =======================
-# Header with spinning moon
+# Header
 # =======================
 st.markdown('<div class="spinning-moon">🌙</div> <h1><span style="color:#FFD700;">NOOR</span><span style="color:#CCCCCC;">MVP</span></h1>', unsafe_allow_html=True)
 st.caption("Remembrance, your most valuable prayer.")
 
 # =======================
-# Tagline / Description
+# Tagline
 # =======================
 st.markdown(
     '<p style="color:#CCCCCC; font-size:18px;">'
-    '<b>Noor</b> is your AI guide, bringing <b>light</b> to your inquiries through the Quran.'
+    '<b>NOOR</b> is your AI guide, bringing <b>LIGHT</b> to your inquiries through the Quran, with Hadith referenced only when requested.'
     '</p>',
     unsafe_allow_html=True
 )
 
 # =======================
-# API key setup
+# OpenAI API setup
 # =======================
 api_key = os.getenv("OPENAI_API_KEY")
 
@@ -77,7 +97,7 @@ if not api_key:
 client = OpenAI(api_key=api_key)
 
 # =======================
-# Featured Verses
+# Featured verses
 # =======================
 featured_verses = [
     "Quran 5:48 — Compete in goodness.",
@@ -90,7 +110,7 @@ featured_verses = [
 ]
 
 # =======================
-# AI Guidance Function
+# AI Response Function
 # =======================
 def get_ai_response(user_input):
     try:
@@ -151,3 +171,14 @@ st.markdown(
     '</div>',
     unsafe_allow_html=True
 )
+
+# =======================
+# Floating Noor avatar (tasteful)
+# =======================
+st.markdown(
+    """
+    <img src='https://i.imgur.com/3Xz7rO2.png' class='noor-avatar' title='Noor, your AI guide'>
+    """,
+    unsafe_allow_html=True
+)
+
