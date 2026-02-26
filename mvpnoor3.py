@@ -52,6 +52,7 @@ body {
 # =======================
 st.markdown('<div class="spinning-moon">🌙</div> <span id="header-title">NoorMVP</span>', unsafe_allow_html=True)
 st.caption("Remembrance, the most valuable prayer.")
+st.markdown('<small style="color:#CCCCCC">Noor is your Quran-first guidance assistant, providing calm answers; Hadith referenced only when asked.</small>', unsafe_allow_html=True)
 
 # =======================
 # API Key Setup
@@ -78,7 +79,12 @@ featured_verses = [
     "Quran 3:159 — Consult and be gentle in decision making.",
     "Quran 57:18 — Charity enriches both giver and receiver.",
     "Quran 16:90 — Justice, good conduct, and generosity are commanded.",
-    "Quran 49:13 — Humanity is diverse; God values piety above status."
+    "Quran 49:13 — Humanity is diverse; God values piety above status.",
+    "Quran 2:255 — Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence.",
+    "Quran 36:36 — Exalted is He who created all pairs – from what the earth grows and from themselves and from that which they do not know.",
+    "Quran 18:109 — If the sea were ink for writing the words of my Lord, it would be exhausted before the words of my Lord were exhausted.",
+    "Quran 51:56 — I did not create jinn and humans except to worship Me.",
+    "Quran 55:1-13 — The Most Merciful / He taught the Quran / He created man / He taught him eloquence…"
 ]
 
 # =======================
@@ -128,10 +134,11 @@ guidance_prompt = st.text_area(
 )
 
 if st.button("Seek Guidance"):
-    if guidance_prompt.strip() == "":
+    prompt_text = guidance_prompt.strip()
+    if not prompt_text:
         st.warning("Please enter a question first.")
     else:
-        response_text = get_ai_response(guidance_prompt)
+        response_text = get_ai_response(prompt_text)
         st.markdown("### Your Guidance:")
         st.write(response_text)
 
