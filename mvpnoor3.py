@@ -180,6 +180,6 @@ verse_placeholder = st.empty()
 def rotate_verse():
     while True:
         verse_placeholder.markdown(f'<div class="featured-verse">{random.choice(featured_verses)}</div>', unsafe_allow_html=True)
-        time.sleep(5)  # rotate every 9 seconds
+        time.sleep(5)  # rotate every 11 seconds
 
 rotate_verse()
