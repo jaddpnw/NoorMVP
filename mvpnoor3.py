@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # =======================
-# Custom CSS
+# Custom CSS for fixed header & dark mode
 # =======================
 st.markdown(
     """
@@ -32,22 +32,20 @@ st.markdown(
         font-weight: bold;
     }
 
-    .spinning-moon {
-        font-size: 50px;
-        display: inline-block;
-        animation: spin 5s linear infinite;
+    /* Fixed header container */
+    .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column; /* caption below */
+        margin-bottom: 20px;
     }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    /* Header Fonts */
+    /* NoorMVP header text */
     h1.noor {
         font-family: 'Bebas Neue', sans-serif;
         font-weight: 900;
-        font-size: 60px;  /* restored size for proper display */
+        font-size: 60px;
         display: inline;
         margin: 0;
         color: #FFD700;
@@ -56,18 +54,33 @@ st.markdown(
     h1.mvp {
         font-family: 'Bebas Neue', sans-serif;
         font-weight: 900;
-        font-size: 60px;  /* matched with Noor */
+        font-size: 60px;
         display: inline;
-        margin: 0;
+        margin: 0 0 0 5px; /* small space between Noor and MVP */
         color: #CCCCCC;
     }
 
+    /* Caption below header */
     .caption {
-        font-size: 18px;
+        font-size: 16px;  /* smaller caption */
         color: #CCCCCC;
-        margin-top: 5px;
+        margin-top: -5px;  /* tuck it closer */
     }
 
+    /* Spinning moon */
+    .spinning-moon {
+        font-size: 50px;
+        display: inline-block;
+        animation: spin 5s linear infinite;
+        margin-bottom: 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Rotating placeholder text style */
     .rotating-placeholder {
         color: #AAAAAA;
         font-style: italic;
@@ -78,18 +91,18 @@ st.markdown(
 )
 
 # =======================
-# Header
-# =======================
-st.markdown('<div class="spinning-moon">🌙</div> <h1 class="noor">Noor</h1><h1 class="mvp">MVP</h1>', unsafe_allow_html=True)
-st.markdown('<div class="caption">Remembrance, your most valuable prayer.</div>', unsafe_allow_html=True)
-
-# =======================
-# Tagline
+# Fixed Header HTML
 # =======================
 st.markdown(
-    '<p style="color:#CCCCCC; font-size:18px;">'
-    '<b>Noor</b> is your AI guide, bringing <b>LIGHT</b> to your inquiries through the Quran.'
-    '</p>',
+    """
+    <div class="header-container">
+        <div class="spinning-moon">🌙</div>
+        <div>
+            <h1 class="noor">Noor</h1><h1 class="mvp">MVP</h1>
+        </div>
+        <div class="caption">Remembrance, your most valuable prayer.</div>
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
