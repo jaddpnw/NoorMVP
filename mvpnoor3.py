@@ -42,27 +42,32 @@ st.markdown(
         100% { transform: rotate(360deg); }
     }
 
-    h1 {
+    h1.noor {
+        font-family: 'Bebas Neue', sans-serif;
+        font-weight: 900;
+        font-size: 50px;
+        margin: 0;
+        display: inline;
+    }
+
+    h1.mvp {
         font-family: 'Bebas Neue', sans-serif;
         font-weight: 900;
         font-size: 60px;
         margin: 0;
+        display: inline;
+        color: #CCCCCC;
     }
 
-    /* Floating Noor avatar */
-    .noor-avatar {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
+    .caption {
+        font-size: 18px;
+        color: #CCCCCC;
+        margin-top: 5px;
     }
-    .noor-avatar:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 15px #FFD700;
+
+    .rotating-placeholder {
+        color: #AAAAAA;
+        font-style: italic;
     }
     </style>
     """,
@@ -72,15 +77,15 @@ st.markdown(
 # =======================
 # Header
 # =======================
-st.markdown('<div class="spinning-moon">🌙</div> <h1><span style="color:#FFD700;">NOOR</span><span style="color:#CCCCCC;">MVP</span></h1>', unsafe_allow_html=True)
-st.caption("Remembrance, your most valuable prayer.")
+st.markdown('<div class="spinning-moon">🌙</div> <h1 class="noor" style="color:#FFD700;">Noor</h1><h1 class="mvp">MVP</h1>', unsafe_allow_html=True)
+st.markdown('<div class="caption">Remembrance, your most valuable prayer.</div>', unsafe_allow_html=True)
 
 # =======================
 # Tagline
 # =======================
 st.markdown(
     '<p style="color:#CCCCCC; font-size:18px;">'
-    '<b>NOOR</b> is your AI guide, bringing <b>LIGHT</b> to your inquiries through the Quran, with Hadith referenced only when requested.'
+    '<b>Noor</b> is your AI guide, bringing <b>LIGHT</b> to your inquiries through the Quran.'
     '</p>',
     unsafe_allow_html=True
 )
@@ -89,7 +94,6 @@ st.markdown(
 # OpenAI API setup
 # =======================
 api_key = os.getenv("OPENAI_API_KEY")
-
 if not api_key:
     st.error("API key not configured. Please set OPENAI_API_KEY in your environment.")
     st.stop()
@@ -120,32 +124,49 @@ def get_ai_response(user_input):
                 {
                     "role": "system",
                     "content": (
-                        "You are Noor, an Islamic guidance assistant. "
-                        "Be calm, structured, intelligent, and non-judgmental. "
-                        "Use Quran, and authentic Hadith references only when requested. "
-                        "Provide practical advice in a welcoming, nuanced way."
+                        "You are Noor, an AI Islamic guidance assistant. "
+                        "Respond in a lively, thoughtful, and inspiring manner — beautifully spicy — "
+                        "while remaining Quran-centered, neutral, and inclusive. "
+                        "Always use the Quran first, quoting chapter and verse when relevant. "
+                        "Highlight moral, ethical, and spiritual principles praised by the Quran: "
+                        "patience, justice, charity, gratitude, compassion, and honesty. "
+                        "Do NOT make definitive statements about anyone's salvation. "
+                        "Include Hadith only if the user explicitly asks, and present it as practical guidance. "
+                        "Provide insights in a welcoming, reflective, and elegant manner, encouraging thought and reflection."
                     )
                 },
                 {"role": "user", "content": user_input}
             ],
-            temperature=0.6
+            temperature=0.7
         )
         return response.choices[0].message.content
     except Exception as e:
         return f"Error: {str(e)}"
 
 # =======================
-# User Interaction
+# Rotating placeholders
 # =======================
+placeholders = [
+    "What is a fascinating verse?",
+    "Where is the Psalms mentioned in the Quran?",
+    "How should one perform wudu?",
+    "What does the Quran say about gratitude?",
+    "Which verse inspires patience the most?"
+]
+rotating_placeholder = random.choice(placeholders)
+
 guidance_prompt = st.text_area(
      "Ask Noor",
-    placeholder="e.g. What are the mysterious letters that appear in 29 different chapters?",
+    placeholder=f"e.g. {rotating_placeholder}",
     height=15
 )
 
+# =======================
+# Button and AI response
+# =======================
 if st.button("Seek Guidance"):
     if guidance_prompt.strip() == "":
-        st.warning("Please enter a question first.")
+        st.warning("Type a question first.")
     else:
         response_text = get_ai_response(guidance_prompt)
         st.markdown("### Your Guidance:")
@@ -159,26 +180,3 @@ st.markdown(
     f'<p style="text-align:center; font-size:16px; color:#CCCCCC;">{random.choice(featured_verses)}</p>',
     unsafe_allow_html=True
 )
-
-# =======================
-# Donation Section
-# =======================
-st.markdown("---")
-st.markdown(
-    '<div style="text-align:center; color:#CCCCCC;">'
-    'Support Noor if it helps you: '
-    '<a href="https://www.paypal.com/donate?hosted_button_id=YOUR_BUTTON_ID" target="_blank" style="color:#FFD700;">Donate</a>'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-# =======================
-# Floating Noor avatar (tasteful)
-# =======================
-st.markdown(
-    """
-    <img src='https://i.imgur.com/3Xz7rO2.png' class='noor-avatar' title='Noor, your AI guide'>
-    """,
-    unsafe_allow_html=True
-)
-
