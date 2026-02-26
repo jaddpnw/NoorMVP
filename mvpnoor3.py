@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import random
+import time
 from openai import OpenAI
 
 # =======================
@@ -18,6 +19,7 @@ st.set_page_config(
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap');
 
     body, .main, .block-container {
         background-color: #000000 !important;
@@ -58,13 +60,22 @@ st.markdown("""
         text-transform: uppercase;
         color: #FFD700;
         margin-top: -5px;
-        margin-left: 60px; /* align under header */
+        margin-left: 60px;
     }
     .noor-description {
-        color: #C0C0C0;
+        font-family: 'Libre Baskerville', serif;
+        color: #DCDCDC;
         font-size: 16px;
-        margin-top: 10px;
+        margin-top: 15px;
         margin-bottom: 15px;
+    }
+    .featured-verse {
+        font-family: 'Roboto Slab', serif;
+        color: #FFD700;
+        font-size: 16px;
+        font-style: italic;
+        text-align: center;
+        margin-top: 20px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -83,7 +94,7 @@ st.markdown(
 st.markdown('<div class="caption">REMEMBRANCE, THE MOST VALUABLE PRAYER</div>', unsafe_allow_html=True)
 
 # Noor description
-st.markdown('<div class="noor-description">Noor is your AI guide, bringing <b>LIGHT</b> to your inquiries through the Quran.</div>', unsafe_allow_html=True)
+st.markdown('<div class="noor-description">Noor is your <i>AI guide</i>, bringing <b>LIGHT</b> to your inquiries through the Quran.</div>', unsafe_allow_html=True)
 
 # =======================
 # API key setup
@@ -119,9 +130,6 @@ featured_verses = [
     "Quran 13:28 — Verily, in the remembrance of Allah do hearts find rest.",
     "Quran 16:97 — Whoever does righteousness, whether male or female, while a believer, We will surely give them a good life."
 ]
-
-st.markdown("---")
-st.write(random.choice(featured_verses))
 
 # =======================
 # AI Guidance Function
@@ -164,3 +172,14 @@ if st.button("Seek Guidance"):
         response = get_ai_response(guidance_prompt)
         st.markdown("### Your Guidance:")
         st.write(response)
+
+# =======================
+# Rotating Featured Verse Below Input
+# =======================
+verse_placeholder = st.empty()
+def rotate_verse():
+    while True:
+        verse_placeholder.markdown(f'<div class="featured-verse">{random.choice(featured_verses)}</div>', unsafe_allow_html=True)
+        time.sleep(5)  # rotate every 5 seconds
+
+rotate_verse()
