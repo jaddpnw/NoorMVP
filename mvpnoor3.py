@@ -37,7 +37,7 @@ st.markdown("""
     }
     .moon {
         font-size: 50px;
-        animation: spin 5s linear infinite;
+        animation: spin 7s linear infinite;
     }
     @keyframes spin {
         0% { transform: rotate(0deg); }
@@ -180,6 +180,6 @@ verse_placeholder = st.empty()
 def rotate_verse():
     while True:
         verse_placeholder.markdown(f'<div class="featured-verse">{random.choice(featured_verses)}</div>', unsafe_allow_html=True)
-        time.sleep(5)  # rotate every 7 seconds
+        time.sleep(5)  # rotate every 9 seconds
 
 rotate_verse()
