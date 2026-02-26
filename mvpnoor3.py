@@ -94,7 +94,7 @@ st.markdown(
 st.markdown('<div class="caption">REMEMBRANCE, THE MOST VALUABLE PRAYER</div>', unsafe_allow_html=True)
 
 # Noor description
-st.markdown('<div class="noor-description">Noor is your <i>AI guide</i>, bringing <b>LIGHT</b> to your inquiries through the Quran.</div>', unsafe_allow_html=True)
+st.markdown('<div class="noor-description">Noor is your <i>AI guide</i>, bringing <b>light<b> to your inquiries through the Quran.</div>', unsafe_allow_html=True)
 
 # =======================
 # API key setup
@@ -180,6 +180,6 @@ verse_placeholder = st.empty()
 def rotate_verse():
     while True:
         verse_placeholder.markdown(f'<div class="featured-verse">{random.choice(featured_verses)}</div>', unsafe_allow_html=True)
-        time.sleep(5)  # rotate every 5 seconds
+        time.sleep(5)  # rotate every 7 seconds
 
 rotate_verse()
