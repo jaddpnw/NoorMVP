@@ -60,7 +60,7 @@ st.caption("Remembrance, your most valuable prayer.")
 # =======================
 st.markdown(
     '<p style="color:#CCCCCC; font-size:18px;">'
-    '<b>NOOR</b> is your AI guide, bringing <b>LIGHT</b> to your inquiries through the Quran, with Hadith referenced only when requested.'
+    '<b>Noor</b> is your AI guide, bringing <b>light</b> to your inquiries through the Quran.'
     '</p>',
     unsafe_allow_html=True
 )
