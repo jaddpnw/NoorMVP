@@ -20,9 +20,10 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
-    body {
-        background-color: #000000;
-        color: #ffffff;
+    /* Ensure dark background on all devices */
+    body, .main, .block-container {
+        background-color: #000000 !important;
+        color: #ffffff !important;
     }
 
     .stButton>button {
@@ -42,20 +43,22 @@ st.markdown(
         100% { transform: rotate(360deg); }
     }
 
+    /* Header Fonts */
     h1.noor {
         font-family: 'Bebas Neue', sans-serif;
         font-weight: 900;
-        font-size: 50px;
-        margin: 0;
+        font-size: 60px;  /* restored size for proper display */
         display: inline;
+        margin: 0;
+        color: #FFD700;
     }
 
     h1.mvp {
         font-family: 'Bebas Neue', sans-serif;
         font-weight: 900;
-        font-size: 60px;
-        margin: 0;
+        font-size: 60px;  /* matched with Noor */
         display: inline;
+        margin: 0;
         color: #CCCCCC;
     }
 
@@ -77,7 +80,7 @@ st.markdown(
 # =======================
 # Header
 # =======================
-st.markdown('<div class="spinning-moon">🌙</div> <h1 class="noor" style="color:#FFD700;">Noor</h1><h1 class="mvp">MVP</h1>', unsafe_allow_html=True)
+st.markdown('<div class="spinning-moon">🌙</div> <h1 class="noor">Noor</h1><h1 class="mvp">MVP</h1>', unsafe_allow_html=True)
 st.markdown('<div class="caption">Remembrance, your most valuable prayer.</div>', unsafe_allow_html=True)
 
 # =======================
@@ -156,7 +159,7 @@ placeholders = [
 rotating_placeholder = random.choice(placeholders)
 
 guidance_prompt = st.text_area(
-     "Ask Noor",
+    "Ask Noor",
     placeholder=f"e.g. {rotating_placeholder}",
     height=15
 )
@@ -165,6 +168,7 @@ guidance_prompt = st.text_area(
 # Button and AI response
 # =======================
 if st.button("Seek Guidance"):
+    # Trim spaces and newlines to accurately detect empty input
     if guidance_prompt.strip() == "":
         st.warning("Type a question first.")
     else:
