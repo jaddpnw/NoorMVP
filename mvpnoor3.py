@@ -1,8 +1,8 @@
 import streamlit as st
 import os
 import random
+import time
 from openai import OpenAI
-from streamlit_autorefresh import st_autorefresh
 
 # =======================
 # Page setup
@@ -62,10 +62,10 @@ st.markdown(
         font-size: 18px;
         color: #C0C0C0;
         margin-top: 15px;
-        margin-bottom: 15px;
+        margin-bottom: 25px;
     }
     .featured-verse {
-        font-size: 16px;
+        font-size: 14px;
         margin-top: 10px;
         font-style: italic;
     }
@@ -168,7 +168,15 @@ if st.button("Seek Guidance"):
         st.warning("Please type a question first.")
 
 # =======================
-# Auto-rotating featured verse below question box
+# Rotating featured verse below question box
 # =======================
-st_autorefresh(interval=4000, key="verse_refresh")  # rotate every 4 seconds
-st.markdown(f'<div class="featured-verse">{random.choice(featured_verses)}</div>', unsafe_allow_html=True)
+if "verse_index" not in st.session_state:
+    st.session_state.verse_index = 0
+
+# display verse
+st.markdown(f'<div class="featured-verse">{featured_verses[st.session_state.verse_index]}</div>', unsafe_allow_html=True)
+
+# rotate verse every 10 seconds
+time.sleep(10)
+st.session_state.verse_index = (st.session_state.verse_index + 1) % len(featured_verses)
+st.experimental_rerun()
