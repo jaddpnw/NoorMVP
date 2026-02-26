@@ -1,8 +1,12 @@
 import streamlit as st
 import os
 import random
+import time
 from openai import OpenAI
 
+# =======================
+# Page Config
+# =======================
 st.set_page_config(
     page_title="NoorMVP",
     page_icon="🌙",
@@ -10,92 +14,102 @@ st.set_page_config(
 )
 
 # =======================
-# Page config and styles
-# =======================
-st.set_page_config(
-    page_title="NoorMVP",
-    page_icon="🌙",
-    layout="centered",
-)
-
 # Custom CSS
-st.markdown(
-    """
-    <style>
-    /* Black background and white font */
-    body {
-        background-color: #000000;
-        color: #ffffff;
-    }
-    .stButton>button {
-        background-color: #FFD700;
-        color: black;
-        font-weight: bold;
-    }
-    .spinning-moon {
-        font-size: 50px;
-        display: inline-block;
-        animation: spin 5s linear infinite;
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+# =======================
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
 
-# Header with spinning moon
-st.markdown('<div class="spinning-moon">🌙</div> <h1 style="display:inline;">NoorMVP</h1>', unsafe_allow_html=True)
-st.caption("Rememberance, the most valuable prayer.")
+body {
+    background-color: #000000;
+    color: #ffffff;
+}
+.stButton>button {
+    background-color: #FFD700;
+    color: black;
+    font-weight: bold;
+}
+.spinning-moon {
+    font-size: 50px;
+    display: inline-block;
+    animation: spin 5s linear infinite;
+}
+#header-title {
+    font-family: 'Roboto Slab', serif;
+    font-size: 48px;
+    display: inline;
+    color: #FFD700;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+""", unsafe_allow_html=True)
 
 # =======================
-# API key setup
+# Header
+# =======================
+st.markdown('<div class="spinning-moon">🌙</div> <span id="header-title">NoorMVP</span>', unsafe_allow_html=True)
+st.caption("Remembrance, the most valuable prayer.")
+
+# =======================
+# API Key Setup
 # =======================
 api_key = os.getenv("OPENAI_API_KEY")
-
 if not api_key:
     st.error("API key not configured. Please set OPENAI_API_KEY in your environment.")
     st.stop()
-
 client = OpenAI(api_key=api_key)
 
 # =======================
-# App Title & Intro
+# App Intro
 # =======================
-st.markdown("""
- *Qu'ran First. Hadith by request.*
-""")
+st.markdown("*Qur’an First. Hadith by request.*")
 
 # =======================
-# Prayer & Quranic content
+# Featured Verses
 # =======================
-
 featured_verses = [
-
     "Quran 5:48 — Compete in goodness.",
     "Quran 2:286 — Allah does not burden a soul beyond what it can bear.",
-    "Quran 2:177 — Who are patient in hardship, keep up prayer, and spend in charity."
+    "Quran 2:177 — Who are patient in hardship, keep up prayer, and spend in charity.",
+    "Quran 94:5-6 — Indeed, with hardship comes ease.",
+    "Quran 3:159 — Consult and be gentle in decision making.",
+    "Quran 57:18 — Charity enriches both giver and receiver.",
+    "Quran 16:90 — Justice, good conduct, and generosity are commanded.",
+    "Quran 49:13 — Humanity is diverse; God values piety above status."
 ]
 
 # =======================
-# AI Guidance Function
+# Placeholder Prompts
+# =======================
+placeholder_prompts = [
+    "eg What are the mysterious letters in 29 chapters?",
+    "eg How can one stay patient in hardship according to the Quran?",
+    "eg What guidance does the Quran give about generosity?",
+    "eg How does reflection on creation deepen understanding?",
+    "eg What is one verse that inspires thoughtful action?"
+]
+placeholder_text = random.choice(placeholder_prompts)
+
+# =======================
+# AI Guidance Function (Noor Philosophy)
 # =======================
 def get_ai_response(user_input):
+    system_message = (
+        "You are Noor, an Islamic guidance assistant. "
+        "Respond calmly and clearly, grounded in the Quran. "
+        "Use Hadith only if explicitly requested. "
+        "Leave space for reflection only when the answer is partial or invites deeper thought. "
+        "Encourage curiosity. Avoid absolutes, preaching, or mystical exaggeration. "
+        "Only include a note about reflecting on the verse if it genuinely adds insight."
+    )
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are Noor, an Islamic guidance assistant. "
-                        "Be calm, structured, intelligent, and non-judgmental. "
-                        "Use Quran, and authentic hadith references only  when requested. "
-                        "Provide practical advice in a welcoming, nuanced way."
-                    )
-                },
+                {"role": "system", "content": system_message},
                 {"role": "user", "content": user_input}
             ],
             temperature=0.6
@@ -107,10 +121,9 @@ def get_ai_response(user_input):
 # =======================
 # User Interaction
 # =======================
-
 guidance_prompt = st.text_area(
-     "Ask Noor",
-    placeholder="e.g. What are the mysterious letters that appear in 29 different chapters?",
+    "Ask Noor",
+    placeholder=placeholder_text,
     height=15
 )
 
@@ -118,21 +131,15 @@ if st.button("Seek Guidance"):
     if guidance_prompt.strip() == "":
         st.warning("Please enter a question first.")
     else:
-        # Example API call (adjust for your implementation)
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You answer based on the Quran first, and only reference Hadith when directly asked."},
-                {"role": "user", "content": guidance_prompt}
-            ]
-        )
+        response_text = get_ai_response(guidance_prompt)
         st.markdown("### Your Guidance:")
-        st.write(response.choices[0].message.content)
-
+        st.write(response_text)
 
 # =======================
-# Featured Verse Section
+# Rotating Featured Verses
 # =======================
 st.markdown("---")
-st.write(random.choice(featured_verses))
-
+verse_container = st.empty()
+for _ in range(20):  # rotates 20 times; adjust as needed
+    verse_container.write(random.choice(featured_verses))
+    time.sleep(5)
