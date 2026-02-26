@@ -94,7 +94,7 @@ st.markdown(
 st.markdown('<div class="caption">REMEMBRANCE, THE MOST VALUABLE PRAYER</div>', unsafe_allow_html=True)
 
 # Noor description
-st.markdown('<div class="noor-description">Noor is your <i>AI guide</i>, bringing <b>light<b> to your inquiries through the Quran.</div>', unsafe_allow_html=True)
+st.markdown('<div class="noor-description">Noor is your <i>AI guide</i>, bringing <i>light</i> to your inquiries through the Quran.</div>', unsafe_allow_html=True)
 
 # =======================
 # API key setup
