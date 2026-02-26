@@ -1,8 +1,8 @@
 import streamlit as st
 import os
 import random
-import time
 from openai import OpenAI
+from streamlit_autorefresh import st_autorefresh
 
 # =======================
 # Page config
@@ -14,14 +14,22 @@ st.set_page_config(
 )
 
 # =======================
-# Header and styles
+# Auto-refresh for rotating prompts/verses (every 10s)
+# =======================
+st_autorefresh(interval=10_000, key="auto_refresh")
+
+# =======================
+# Custom CSS for layout and fonts
 # =======================
 st.markdown(
     """
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
     body, .main, .block-container {
         background-color: #000000 !important;
         color: #ffffff !important;
+        font-family: 'Roboto', sans-serif;
     }
 
     .stButton>button {
@@ -32,23 +40,15 @@ st.markdown(
 
     .header-container {
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-bottom: 15px;
-    }
-
-    .header-row {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
+        gap: 10px;
     }
 
     .spinning-moon {
         font-size: 50px;
+        display: inline-block;
         animation: spin 5s linear infinite;
-        margin-right: 10px;
     }
 
     @keyframes spin {
@@ -56,53 +56,61 @@ st.markdown(
         100% { transform: rotate(360deg); }
     }
 
-    .noor {
-        font-family: 'Arial Black', sans-serif;
-        font-size: 60px;
-        font-weight: 900;
+    .noor-text {
+        font-weight: bold;
+        font-size: 48px;
         color: #FFD700;
         margin: 0;
     }
 
-    .mvp {
-        font-family: 'Arial Black', sans-serif;
-        font-size: 60px;
-        font-weight: 900;
-        color: #CCCCCC;
-        margin-left: 5px;
+    .mvp-text {
+        font-weight: bold;
+        font-size: 48px;
+        color: #C0C0C0;
+        margin: 0;
     }
 
-    .caption {
-        font-family: Verdana, sans-serif;
+    .caption-text {
         font-size: 14px;
-        color: #000000;  /* blank space placeholder */
-        text-transform: uppercase;
+        color: #FFFF00;
+        text-align: center;
+        letter-spacing: 1px;
         margin-top: -5px;
-        margin-bottom: 10px;
     }
 
-    .ai-guide {
-        font-family: Verdana, sans-serif;
-        font-size: 16px;
-        font-weight: 600;
-        color: #CCCCCC; /* silver color */
-        margin-top: 15px;
-        margin-bottom: 25px;
+    .description-text {
+        font-size: 18px;
+        color: #C0C0C0;
         text-align: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
     }
     </style>
+    """,
+    unsafe_allow_html=True
+)
 
+# =======================
+# Header
+# =======================
+st.markdown(
+    """
     <div class="header-container">
-        <div class="header-row">
-            <div class="spinning-moon">🌙</div>
-            <div>
-                <span class="noor">Noor</span><span class="mvp">MVP</span>
-            </div>
-        </div>
-        <div class="caption"> </div>
-        <div class="ai-guide">Noor is your AI guide, bringing <strong>LIGHT</strong> to your inquiries through the Quran.</div>
+        <div class="spinning-moon">🌙</div>
+        <h1 class="noor-text">Noor</h1><h1 class="mvp-text">MVP</h1>
     </div>
     """,
+    unsafe_allow_html=True
+)
+
+# Small caption space preserved, color as requested
+st.markdown('<div class="caption-text">REMEMBRANCE, YOUR MOST VALUABLE PRAYER</div>', unsafe_allow_html=True)
+
+# =======================
+# Description below header
+# =======================
+st.markdown(
+    '<div class="description-text"><b>Noor</b> is your AI guide, bringing <b>LIGHT</b> to your inquiries through the Quran.</div>',
     unsafe_allow_html=True
 )
 
@@ -110,6 +118,7 @@ st.markdown(
 # API key setup
 # =======================
 api_key = os.getenv("OPENAI_API_KEY")
+
 if not api_key:
     st.error("API key not configured. Please set OPENAI_API_KEY in your environment.")
     st.stop()
@@ -119,59 +128,43 @@ client = OpenAI(api_key=api_key)
 # =======================
 # Rotating placeholder prompts
 # =======================
-placeholder_prompts = [
-    "What is a fascinating verse?",
-    "Where is the Psalms mentioned in the Quran?",
-    "What are the mysterious letters in 29 chapters?",
-    "What does patience truly mean in the Quran?",
-    "How is charity emphasized in the Quran?"
+placeholders = [
+    "e.g. What is a fascinating verse?",
+    "e.g. Where is the Psalms mentioned in the Quran?",
+    "e.g. What do the mysterious letters in 29 chapters mean?",
+    "e.g. How should one approach forgiveness?",
+    "e.g. What guidance is given about patience?"
 ]
+placeholder_text = random.choice(placeholders)
 
 # =======================
-# Featured verses
+# User Input
+# =======================
+guidance_prompt = st.text_area(
+    "Ask Noor",
+    placeholder=placeholder_text,
+    height=80
+)
+
+# =======================
+# Featured verses rotation
 # =======================
 featured_verses = [
     "Quran 5:48 — Compete in goodness.",
     "Quran 2:286 — Allah does not burden a soul beyond what it can bear.",
     "Quran 2:177 — Who are patient in hardship, keep up prayer, and spend in charity.",
-    "Quran 24:35 — Allah is the Light of the heavens and the earth.",
-    "Quran 3:190 — Indeed, in the creation of the heavens and the earth are signs for those of understanding.",
-    "Quran 49:13 — The most honored of you in the sight of Allah is the most righteous.",
-    "Quran 2:152 — Remember Me; I will remember you."
+    "Quran 3:159 — Be gentle and forgive; Allah loves the doers of good.",
+    "Quran 94:5-6 — With hardship comes ease.",
+    "Quran 16:125 — Invite to the way of your Lord with wisdom and good instruction.",
+    "Quran 2:2 — This is the Book in which there is no doubt, a guidance for the God-fearing.",
+    "Quran 18:10 — Those who believe and fear Allah, He will remove them from fear."
 ]
 
 # =======================
-# Session state for rotation
+# AI Guidance Function
 # =======================
-if 'placeholder_index' not in st.session_state:
-    st.session_state.placeholder_index = 0
-if 'verse_index' not in st.session_state:
-    st.session_state.verse_index = 0
-
-# =======================
-# Dynamic placeholders and verses
-# =======================
-placeholder_box = st.empty()
-verse_box = st.empty()
-
-# Use columns to separate input and button
-input_col, button_col = st.columns([4, 1])
-
-with input_col:
-    guidance_prompt = placeholder_box.text_area(
-        "Ask Noor",
-        placeholder=placeholder_prompts[st.session_state.placeholder_index],
-        height=15
-    )
-
-with button_col:
-    clicked = st.button("Seek Guidance")
-
-# =======================
-# AI response
-# =======================
-if clicked:
-    if guidance_prompt and guidance_prompt.strip():
+def get_ai_response(user_input):
+    try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -180,28 +173,31 @@ if clicked:
                     "content": (
                         "You are Noor, an Islamic guidance assistant. "
                         "Be calm, structured, intelligent, and non-judgmental. "
-                        "Use Quran extensively, provide Hadith references only when requested. "
-                        "Responses should be spicy but grounded, inclusive, and spiritually insightful."
+                        "Use Quran primarily, and reference Hadith only when asked. "
+                        "Provide practical advice in a welcoming, nuanced, and grounded way."
                     )
                 },
-                {"role": "user", "content": guidance_prompt.strip()}
+                {"role": "user", "content": user_input}
             ],
             temperature=0.6
         )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+# =======================
+# Button & Response
+# =======================
+if st.button("Seek Guidance"):
+    if guidance_prompt.strip():  # ✅ Fixed: works as long as anything is typed
+        response_text = get_ai_response(guidance_prompt)
         st.markdown("### Your Guidance:")
-        st.write(response.choices[0].message.content)
+        st.write(response_text)
     else:
         st.warning("Please enter a question first.")
 
 # =======================
-# Live rotation every refresh
+# Featured Verse Display
 # =======================
-verse_box.write(featured_verses[st.session_state.verse_index])
-st.session_state.placeholder_index = (st.session_state.placeholder_index + 1) % len(placeholder_prompts)
-st.session_state.verse_index = (st.session_state.verse_index + 1) % len(featured_verses)
-
-# =======================
-# Auto refresh every 10 seconds for live rotation
-# =======================
-st.experimental_rerun()
-time.sleep(10)
+st.markdown("---")
+st.write(random.choice(featured_verses))
