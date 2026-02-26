@@ -13,14 +13,13 @@ st.set_page_config(
 )
 
 # =======================
-# Custom CSS for fixed header & dark mode
+# Custom CSS for header & dark mode
 # =======================
 st.markdown(
     """
-    <style>
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-
-    /* Ensure dark background on all devices */
+    
+    /* Dark mode across devices */
     body, .main, .block-container {
         background-color: #000000 !important;
         color: #ffffff !important;
@@ -32,39 +31,13 @@ st.markdown(
         font-weight: bold;
     }
 
-    /* Fixed header container */
+    /* Header container */
     .header-container {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        flex-direction: column; /* caption below */
-        margin-bottom: 20px;
-    }
-
-    /* NoorMVP header text */
-    h1.noor {
-        font-family: 'Bebas Neue', sans-serif;
-        font-weight: 900;
-        font-size: 60px;
-        display: inline;
-        margin: 0;
-        color: #FFD700;
-    }
-
-    h1.mvp {
-        font-family: 'Bebas Neue', sans-serif;
-        font-weight: 900;
-        font-size: 60px;
-        display: inline;
-        margin: 0 0 0 5px; /* small space between Noor and MVP */
-        color: #CCCCCC;
-    }
-
-    /* Caption below header */
-    .caption {
-        font-size: 16px;  /* smaller caption */
-        color: #CCCCCC;
-        margin-top: -5px;  /* tuck it closer */
+        margin-bottom: 15px;
     }
 
     /* Spinning moon */
@@ -74,24 +47,53 @@ st.markdown(
         animation: spin 5s linear infinite;
         margin-bottom: 10px;
     }
-
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
 
-    /* Rotating placeholder text style */
-    .rotating-placeholder {
-        color: #AAAAAA;
-        font-style: italic;
+    /* NoorMVP text side by side */
+    h1.noor {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 60px;
+        font-weight: 900;
+        margin: 0;
+        color: #FFD700;
+        display: inline;
     }
-    </style>
+    h1.mvp {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 60px;
+        font-weight: 900;
+        margin: 0 0 0 5px;
+        color: #CCCCCC;
+        display: inline;
+    }
+
+    /* Caption below header */
+    .caption {
+        font-family: 'Arial', sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        color: #AAAAAA;
+        margin-top: -5px;
+    }
+
+    /* AI guide line */
+    .ai-guide {
+        font-family: 'Arial', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #FFD700; /* emphasize LIGHT */
+        margin-top: 5px;
+        text-align: center;
+    }
     """,
     unsafe_allow_html=True
 )
 
 # =======================
-# Fixed Header HTML
+# Header HTML
 # =======================
 st.markdown(
     """
@@ -101,6 +103,7 @@ st.markdown(
             <h1 class="noor">Noor</h1><h1 class="mvp">MVP</h1>
         </div>
         <div class="caption">Remembrance, your most valuable prayer.</div>
+        <div class="ai-guide">Noor is your AI guide, bringing <strong>LIGHT</strong> to your inquiries through the Quran.</div>
     </div>
     """,
     unsafe_allow_html=True
@@ -181,7 +184,6 @@ guidance_prompt = st.text_area(
 # Button and AI response
 # =======================
 if st.button("Seek Guidance"):
-    # Trim spaces and newlines to accurately detect empty input
     if guidance_prompt.strip() == "":
         st.warning("Type a question first.")
     else:
