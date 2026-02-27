@@ -18,49 +18,36 @@ st.set_page_config(
 # =======================
 st.markdown("""
 <style>
-body, .main, .block-container {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-.stButton>button {
-    background-color: #FFD700;
-    color: black;
-    font-weight: bold;
-}
 .header {
     display: flex;
     align-items: center;
 }
+
 .moon {
     font-size: 45px;
     margin-right: 10px;
+    display: inline-block;
+    animation: spin 6s linear infinite;
 }
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .noor {
     font-size: 48px;
     font-weight: bold;
     color: white;
 }
+
 .mvp {
     font-size: 48px;
     font-weight: bold;
     color: #FFD700;
     margin-left: 4px;
 }
-.ai-guide {
-    color: #C0C0C0;
-    font-size: 16px;
-    margin-top: 10px;
-    margin-bottom: 25px;
-}
-.rotating-verse {
-    color: #C0C0C0;
-    font-size: 13px;
-    margin-top: 40px;
-    text-align: center;
-}
 </style>
-""", unsafe_allow_html=True)
-
 # =======================
 # Header
 # =======================
