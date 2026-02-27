@@ -173,29 +173,43 @@ if 'verse_index' not in st.session_state:
     st.session_state.verse_index = 0
 
 # =======================
-# User Interaction
+# User interaction
 # =======================
-placeholder_box = st.empty()
-guidance_prompt = placeholder_box.text_area(
+
+user_question = st.text_area(
     "Ask Noor",
-    placeholder=placeholder_prompts[st.session_state.placeholder_index],
-    height=15
+    placeholder=random.choice(placeholder_prompts),
+    height=15,
+    key="noor_input"
 )
 
 if st.button("Seek Guidance"):
-    if guidance_prompt and guidance_prompt.strip():
-        response = get_ai_response(guidance_prompt.strip())
-        st.markdown("### Your Guidance:")
-        st.write(response)
-    else:
-        st.warning("Please enter a question first.")
 
-# =======================
-# Dynamic rotation of placeholder and featured verse
-# =======================
-verse_box = st.empty()
-verse_box.write(featured_verses[st.session_state.verse_index])
+    # Only proceed if something exists
+    if user_question and user_question.strip():
 
-# Rotate every refresh (Streamlit doesn't allow real-time without rerun)
-st.session_state.placeholder_index = (st.session_state.placeholder_index + 1) % len(placeholder_prompts)
-st.session_state.verse_index = (st.session_state.verse_index + 1) % len(featured_verses)
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Noor, an Islamic guidance assistant. "
+                            "Be grounded, inclusive, intelligent, warm, and a little spicy but respectful. "
+                            "Provide Quran-based guidance. "
+                            "Structured, calm, and thoughtful responses."
+                        )
+                    },
+                    {"role": "user", "content": user_question.strip()}
+                ],
+                temperature=0.6
+            )
+
+            st.markdown("### Your Guidance:")
+            st.write(response.choices[0].message.content)
+
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+
+    # If empty, do absolutely nothing (no warning)
