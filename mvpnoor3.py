@@ -19,6 +19,21 @@ st.set_page_config(
 # =======================
 st.markdown("""
 <style>
+
+/* Force full cosmic black background everywhere */
+html, body, [class*="css"]  {
+    background-color: #0a0a0f !important;
+}
+
+.stApp {
+    background-color: #0a0a0f !important;
+}
+
+.block-container {
+    background-color: #0a0a0f !important;
+}
+
+/* Header Layout */
 .header {
     display: flex;
     align-items: center;
@@ -63,6 +78,7 @@ st.markdown("""
     margin-top: 40px;
     text-align: center;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
