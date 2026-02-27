@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 import os
 import random
@@ -28,6 +29,7 @@ st.markdown("""
     margin-right: 10px;
     display: inline-block;
     animation: spin 6s linear infinite;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
 }
 
 @keyframes spin {
@@ -47,7 +49,23 @@ st.markdown("""
     color: #FFD700;
     margin-left: 4px;
 }
+
+.ai-guide {
+    color: #C0C0C0;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.rotating-verse {
+    color: #C0C0C0;
+    font-size: 13px;
+    margin-top: 40px;
+    text-align: center;
+}
 </style>
+""", unsafe_allow_html=True)
+
 # =======================
 # Header
 # =======================
@@ -85,7 +103,7 @@ placeholder_prompts = [
 ]
 
 # =======================
-# Question Input (FIXED)
+# Question Input (Fixed — no warning)
 # =======================
 user_question = st.text_area(
     "Ask Noor",
@@ -119,11 +137,11 @@ if st.button("Seek Guidance"):
         st.markdown("### Your Guidance:")
         st.write(response.choices[0].message.content)
 
-    # If empty → do nothing (no warning, no error)
+    # If empty → do nothing
 
 
 # =======================
-# Rotating Verses (9 sec, silver, non-blocking)
+# Rotating Verses (9 sec, silver)
 # =======================
 featured_verses = [
     "Quran 94:5 — With hardship comes ease.",
@@ -141,7 +159,6 @@ if "last_update" not in st.session_state:
 
 current_time = time.time()
 
-# Rotate every 9 seconds
 if current_time - st.session_state.last_update > 9:
     st.session_state.verse_index = (
         st.session_state.verse_index + 1
