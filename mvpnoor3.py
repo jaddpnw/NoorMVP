@@ -53,7 +53,7 @@ st.markdown("""
 # =======================
 st.markdown("""
 <div class="header">
-    <div class="moon">🌙</div>
+    <div class="moon">&#127769;</div>
     <div class="noor">Noor</div>
     <div class="mvp">MVP</div>
 </div>
