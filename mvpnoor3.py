@@ -14,191 +14,114 @@ st.set_page_config(
 )
 
 # =======================
-# Header and styles
+# Styling
 # =======================
+st.markdown("""
+<style>
+body, .main, .block-container {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+.stButton>button {
+    background-color: #FFD700;
+    color: black;
+    font-weight: bold;
+}
+.header {
+    display: flex;
+    align-items: center;
+}
+.moon {
+    font-size: 45px;
+    margin-right: 10px;
+}
+.noor {
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+}
+.mvp {
+    font-size: 48px;
+    font-weight: bold;
+    color: #FFD700;
+    margin-left: 4px;
+}
+.ai-guide {
+    color: #C0C0C0;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+.rotating-verse {
+    color: #C0C0C0;
+    font-size: 13px;
+    margin-top: 40px;
+    text-align: center;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =======================
+# Header
+# =======================
+st.markdown("""
+<div class="header">
+    <div class="moon">🌙</div>
+    <div class="noor">Noor</div>
+    <div class="mvp">MVP</div>
+</div>
+""", unsafe_allow_html=True)
+
 st.markdown(
-    """
-    <style>
-    body, .main, .block-container {
-        background-color: #000000 !important;
-        color: #ffffff !important;
-    }
-
-    .stButton>button {
-        background-color: #FFD700;
-        color: black;
-        font-weight: bold;
-    }
-
-    .header-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 15px;
-    }
-
-    .header-row {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .spinning-moon {
-        font-size: 50px;
-        animation: spin 5s linear infinite;
-        margin-right: 10px;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .noor {
-        font-family: 'Arial Black', sans-serif;
-        font-size: 60px;
-        font-weight: 900;
-        color: #FFD700;
-        margin: 0;
-    }
-
-    .mvp {
-        font-family: 'Arial Black', sans-serif;
-        font-size: 60px;
-        font-weight: 900;
-        color: #CCCCCC;
-        margin-left: 5px;
-    }
-
-    .caption {
-        font-family: Verdana, sans-serif;
-        font-size: 14px;
-        color: #FFD700;
-        text-transform: uppercase;
-        margin-top: -5px;
-    }
-
-    .ai-guide {
-        font-family: Verdana, sans-serif;
-        font-size: 16px;
-        font-weight: 600;
-        color: #CCCCCC;
-        margin-top: 15px;
-f        margin-bottom: 20px;
-        text-align: center;
-    }
-    </style>
-
-    <div class="header-container">
-        <div class="header-row">
-            <div class="spinning-moon">🌙</div>
-            <div>
-                <span class="noor">Noor</span><span class="mvp">MVP</span>
-            </div>
-        </div>
-        <div class="caption">REMEMBRANCE, YOUR MOST VALUABLE PRAYER</div>
-        <div class="ai-guide"><strong>Noor</strong> is your <i>AI guide</i>, bringing <strong>light</strong> to your inquiries through the Quran.</div>
-    </div>
-    """,
+    '<div class="ai-guide">Noor is your <i>AI guide</i>, bringing <b>light</b> to your inquiries through the Quran.</div>',
     unsafe_allow_html=True
 )
 
 # =======================
-# API key setup
+# API Setup
 # =======================
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
-    st.error("API key not configured. Please set OPENAI_API_KEY in your environment.")
+    st.error("Missing OPENAI_API_KEY.")
     st.stop()
 
 client = OpenAI(api_key=api_key)
 
 # =======================
-# Rotating placeholder prompts
+# Placeholder Prompts
 # =======================
 placeholder_prompts = [
-    "e.g. What is a fascinating verse?",
-    "e.g. Where is the Psalms mentioned in the Quran?",
-    "e.g. What are the mysterious letters in 29 chapters?",
-    "e.g. What does patience truly mean in the Quran?",
-    "e.g. How is charity emphasized in the Quran?"
+    "What verse speaks about patience?",
+    "Where is mercy described most beautifully?",
+    "What does the Quran say about hardship?",
+    "What are the mysterious letters in 29 chapters?",
 ]
 
 # =======================
-# Featured verses
+# Question Input (FIXED)
 # =======================
-featured_verses = [
-    "Quran 5:48 — Compete in goodness.",
-    "Quran 2:286 — Allah does not burden a soul beyond what it can bear.",
-    "Quran 2:177 — Who are patient in hardship, keep up prayer, and spend in charity.",
-    "Quran 24:35 — Allah is the Light of the heavens and the earth.",
-    "Quran 3:190 — Indeed, in the creation of the heavens and the earth are signs for those of understanding.",
-    "Quran 49:13 — The most honored of you in the sight of Allah is the most righteous.",
-    "Quran 2:152 — Remember Me; I will remember you."
-]
-
-# =======================
-# AI Guidance Function
-# =======================
-def get_ai_response(user_input):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are Noor, an Islamic guidance assistant. "
-                        "Be calm, structured, intelligent, and non-judgmental. "
-                        "Use Quran extensively, provide Hadith references only when requested. "
-                        "Responses should be spicy but grounded, inclusive, and spiritually insightful."
-                    )
-                },
-                {"role": "user", "content": user_input}
-            ],
-            temperature=0.6
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-# =======================
-# Session state for dynamic placeholders and verses
-# =======================
-if 'placeholder_index' not in st.session_state:
-    st.session_state.placeholder_index = 0
-if 'verse_index' not in st.session_state:
-    st.session_state.verse_index = 0
-
-# =======================
-# User interaction
-# =======================
-
 user_question = st.text_area(
     "Ask Noor",
     placeholder=random.choice(placeholder_prompts),
-    height=15,
+    height=120,
     key="noor_input"
 )
 
 if st.button("Seek Guidance"):
 
-    # Only proceed if something exists
     if user_question and user_question.strip():
 
-        try:
+        with st.spinner("Noor is reflecting..."):
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {
                         "role": "system",
                         "content": (
-                            "You are Noor, an Islamic guidance assistant. "
-                            "Be grounded, inclusive, intelligent, warm, and a little spicy but respectful. "
-                            "Provide Quran-based guidance. "
-                            "Structured, calm, and thoughtful responses."
+                            "You are Noor, an Islamic AI guide. "
+                            "Be grounded, inclusive, thoughtful, structured, "
+                            "a little spicy but respectful. "
+                            "Base answers on the Quran."
                         )
                     },
                     {"role": "user", "content": user_question.strip()}
@@ -206,10 +129,39 @@ if st.button("Seek Guidance"):
                 temperature=0.6
             )
 
-            st.markdown("### Your Guidance:")
-            st.write(response.choices[0].message.content)
+        st.markdown("### Your Guidance:")
+        st.write(response.choices[0].message.content)
 
-        except Exception as e:
-            st.error(f"Error: {str(e)}")
+    # If empty → do nothing (no warning, no error)
 
-    # If empty, do absolutely nothing (no warning)
+
+# =======================
+# Rotating Verses (9 sec, silver, non-blocking)
+# =======================
+featured_verses = [
+    "Quran 94:5 — With hardship comes ease.",
+    "Quran 13:28 — In remembrance of Allah do hearts find rest.",
+    "Quran 2:286 — Allah does not burden a soul beyond what it can bear.",
+    "Quran 16:90 — Allah commands justice and excellence.",
+    "Quran 39:53 — Do not despair of the mercy of Allah.",
+]
+
+if "verse_index" not in st.session_state:
+    st.session_state.verse_index = 0
+
+if "last_update" not in st.session_state:
+    st.session_state.last_update = time.time()
+
+current_time = time.time()
+
+# Rotate every 9 seconds
+if current_time - st.session_state.last_update > 9:
+    st.session_state.verse_index = (
+        st.session_state.verse_index + 1
+    ) % len(featured_verses)
+    st.session_state.last_update = current_time
+
+st.markdown(
+    f'<div class="rotating-verse">{featured_verses[st.session_state.verse_index]}</div>',
+    unsafe_allow_html=True
+)
