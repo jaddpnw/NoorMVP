@@ -86,7 +86,7 @@ st.markdown(
         font-weight: 600;
         color: #CCCCCC;
         margin-top: 15px;
-        margin-bottom: 20px;
+f        margin-bottom: 20px;
         text-align: center;
     }
     </style>
@@ -119,11 +119,11 @@ client = OpenAI(api_key=api_key)
 # Rotating placeholder prompts
 # =======================
 placeholder_prompts = [
-    "What is a fascinating verse?",
-    "Where is the Psalms mentioned in the Quran?",
-    "What are the mysterious letters in 29 chapters?",
-    "What does patience truly mean in the Quran?",
-    "How is charity emphasized in the Quran?"
+    "e.g. What is a fascinating verse?",
+    "e.g. Where is the Psalms mentioned in the Quran?",
+    "e.g. What are the mysterious letters in 29 chapters?",
+    "e.g. What does patience truly mean in the Quran?",
+    "e.g. How is charity emphasized in the Quran?"
 ]
 
 # =======================
