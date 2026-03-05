@@ -1,13 +1,34 @@
 # -*- coding: utf-8 -*-
+"""
+NoorMVP — Qur’an-first Streamlit app (stable + clean UI)
+
+This version includes:
+- Clean header + your “safe to explore” line
+- Guidance vs Study mode (tone feature, not required)
+- Concise answer checkbox (kept)
+- Removes the “Verses” selector (fixed internally)
+- Brighter, softer desktop readability (less harsh)
+- Premium input/button styling
+- Qur’an verse retrieval (TF-IDF) from data/quran_en.json
+- Streaming answer with: clip context + auto-retry + graceful failure (handles intermittent OpenAI 500s)
+- Explore further (follow-up buttons + show retrieved + context window)
+- Quiet Reflection toggle (optional, doesn’t interrupt flow)
+
+Repo requirements:
+- data/quran_en.json must exist
+- requirements.txt must include: streamlit, openai, scikit-learn, numpy
+"""
+
 import os
 import json
 import time
 import random
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple
 
 import numpy as np
 import streamlit as st
 from openai import OpenAI
+from openai import APIError, RateLimitError, APITimeoutError
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -21,7 +42,7 @@ st.set_page_config(
 )
 
 # =======================
-# Styling (readable on desktop)
+# Styling
 # =======================
 st.markdown("""
 <style>
@@ -33,49 +54,67 @@ html, body { background-color: #0a0a0f !important; }
 .moon {
     font-size: 45px; margin-right: 10px; display: inline-block;
     animation: spin 6s linear infinite;
-    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.75));
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.70));
 }
 @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
 
-.noor { font-size: 48px; font-weight: bold; color: white; }
+.noor { font-size: 48px; font-weight: bold; color: #FFFFFF; }
 .mvp  { font-size: 48px; font-weight: bold; color: #FFD700; margin-left: 4px; }
 
-.ai-guide { color: #D0D0D0; font-size: 16px; margin-top: 10px; margin-bottom: 12px; }
+.ai-guide { color: #E3E3E3; font-size: 16px; margin-top: 10px; margin-bottom: 8px; }
+.small-note { color: #B5B5B5; font-size: 12px; margin-top: 4px; margin-bottom: 10px; }
 
-.small-note { color: #9a9a9a; font-size: 12px; margin-top: 6px; margin-bottom: 10px; }
-
-/* Answer box + brighter answer text */
+/* Answer box + softer bright text (less harsh than pure white) */
 .noor-box {
-    background: rgba(255,255,255,0.035);
-    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.05);
     border-radius: 14px;
     padding: 18px 18px;
     margin-top: 10px;
 }
 .noor-answer {
-    color: #F5F5F5;
+    color: #EAEAEA;
     font-size: 16px;
-    line-height: 1.7;
+    line-height: 1.75;
 }
 .noor-box p, .noor-box li, .noor-box span, .noor-box div, .noor-box h1, .noor-box h2, .noor-box h3, .noor-box h4 {
-    color: #F5F5F5 !important;
+    color: #EAEAEA !important;
 }
 
-/* Buttons feel premium */
+/* Premium input feel */
+textarea {
+  background: rgba(255,255,255,0.03) !important;
+  color: #F2F2F2 !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+}
+textarea:focus {
+  outline: none !important;
+  border: 1px solid rgba(255,215,0,0.32) !important;
+  box-shadow: 0 0 12px rgba(255,215,0,0.16) !important;
+}
+
+/* Button polish */
+.stButton button {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255,215,0,0.22) !important;
+}
 .stButton button:hover {
-    box-shadow: 0 0 10px rgba(255,215,0,0.45);
+    box-shadow: 0 0 10px rgba(255,215,0,0.40);
+}
+.stButton button:active {
+  transform: translateY(1px);
 }
 
-/* Feature widgets */
-.feature-row {
+/* Mode row */
+.mode-row {
     background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.04);
     border-radius: 12px;
     padding: 10px 12px;
     margin: 8px 0 10px 0;
 }
-.feature-title { color: #F0F0F0; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.feature-sub { color: #BEBEBE; font-size: 12px; line-height: 1.4; }
+.mode-sub { color: #BEBEBE; font-size: 12px; line-height: 1.4; }
 
 /* Featured verse */
 .featured-verse { color: #C0C0C0; font-size: 13px; margin-top: 26px; text-align: center; }
@@ -94,11 +133,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown(
-    '<div class="ai-guide">Exploring the Qur’an as a clear and universal guide to <b>God (Allah)</b>.</div>',
+    '<div class="ai-guide">The Qur’an is purposely simple—clearer than the interpretations often associated with it.</div>',
     unsafe_allow_html=True
 )
 st.markdown(
-    '<div class="small-note">Qur’an-first: Noor retrieves relevant verses first, cites them, and labels reflections clearly.</div>',
+    '<div class="small-note">Ask Noor anything about the Qur’an. You are safe to explore.</div>',
     unsafe_allow_html=True
 )
 
@@ -109,23 +148,33 @@ api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     st.error("Missing OPENAI_API_KEY.")
     st.stop()
+
 client = OpenAI(api_key=api_key)
 
 # =======================
 # Qur'an dataset + retrieval
 # =======================
 DATA_PATH = "data/quran_en.json"
+DEFAULT_TOP_K = 6  # removed from UI to keep interface simple
 
 @st.cache_resource
 def load_quran_and_index() -> Tuple[List[Dict], TfidfVectorizer, np.ndarray]:
     if not os.path.exists(DATA_PATH):
         raise FileNotFoundError(
-            f"Missing {DATA_PATH}. Create it with Qur'an verses as JSON objects, e.g. "
+            f"Missing {DATA_PATH}. Create it as a JSON list of objects: "
             f'{{"surah":1,"ayah":1,"text":"..."}}'
         )
 
     with open(DATA_PATH, "r", encoding="utf-8") as f:
         verses = json.load(f)
+
+    if not isinstance(verses, list) or not verses:
+        raise ValueError(f"{DATA_PATH} must be a non-empty JSON list.")
+
+    # Minimal validation
+    for i, v in enumerate(verses[:100]):
+        if not isinstance(v, dict) or not all(k in v for k in ("surah", "ayah", "text")):
+            raise ValueError(f"Verse at index {i} missing required keys (surah, ayah, text).")
 
     texts = [v["text"] for v in verses]
 
@@ -138,27 +187,32 @@ def load_quran_and_index() -> Tuple[List[Dict], TfidfVectorizer, np.ndarray]:
     matrix = vectorizer.fit_transform(texts)
     return verses, vectorizer, matrix
 
-def retrieve_verses(query: str, top_k: int = 6) -> List[Dict]:
+def retrieve_verses(query: str, top_k: int = DEFAULT_TOP_K) -> List[Dict]:
     verses, vectorizer, matrix = load_quran_and_index()
     q_vec = vectorizer.transform([query])
     sims = cosine_similarity(q_vec, matrix).flatten()
     top_idx = np.argsort(sims)[::-1][:top_k]
     results = []
     for i in top_idx:
-        v = verses[int(i)]
         score = float(sims[int(i)])
         if score <= 0:
             continue
+        v = verses[int(i)]
         results.append({**v, "score": score})
     return results
 
 def get_surrounding(verses: List[Dict], surah: int, ayah: int, window: int = 2) -> List[Dict]:
     out = []
     for v in verses:
-        if v["surah"] == surah and (ayah - window) <= v["ayah"] <= (ayah + window):
+        if int(v["surah"]) == int(surah) and (ayah - window) <= int(v["ayah"]) <= (ayah + window):
             out.append(v)
-    out.sort(key=lambda x: x["ayah"])
+    out.sort(key=lambda x: int(x["ayah"]))
     return out
+
+def clip(text: str, n: int = 360) -> str:
+    """Keep prompts smaller for reliability."""
+    text = (text or "").strip()
+    return text if len(text) <= n else text[:n].rstrip() + "…"
 
 # =======================
 # Session state
@@ -193,43 +247,39 @@ placeholder_prompts = [
 ]
 
 # =======================
-# Lightweight helpers
+# Broadness heuristic (non-blocking)
 # =======================
 BROAD_MARKERS = [
-    "life", "meaning", "everything", "help", "guidance", "hard", "hardship", "sad", "depressed",
-    "anxious", "fear", "lost", "confused", "purpose", "relationships", "marriage", "money", "work"
+    "life", "meaning", "everything", "help", "guidance", "hard", "hardship", "sad",
+    "depressed", "anxious", "fear", "lost", "confused", "purpose", "relationships",
+    "marriage", "money", "work"
 ]
 
 def maybe_make_clarifying_question(user_q: str) -> str:
-    q = user_q.lower().strip()
+    q = (user_q or "").lower().strip()
     if len(q) < 18:
         return ""
-    # If it looks very broad or contains broad markers, offer a non-blocking clarifier.
-    broad = any(w in q for w in BROAD_MARKERS) or q.endswith("?") and len(q.split()) <= 5
+    broad = any(w in q for w in BROAD_MARKERS) or (q.endswith("?") and len(q.split()) <= 5)
     if broad:
         return "Before I answer—are you seeking clarity, comfort, direction, or correction?"
     return ""
 
 # =======================
-# Controls (kept clean)
+# Controls (concise checkbox stays)
 # =======================
-colA, colB, colC = st.columns([1, 1, 1])
+colA, colB, colC = st.columns([1.0, 1.0, 1.0])
 with colA:
     mode = st.selectbox("Mode", ["Guidance", "Study"], index=0)
 with colB:
     concise = st.checkbox("Concise answer", value=True)
 with colC:
-    top_k = st.selectbox("Verses", options=[4, 6, 8, 10], index=1)
+    # Small empty spacer to keep layout balanced (no extra control)
+    st.markdown("")
 
-# =======================
-# Feature row (non-invasive, optional)
-# =======================
 st.markdown("""
-<div class="feature-row">
-  <div class="feature-title">Optional: Open-heart features</div>
-  <div class="feature-sub">
-    Guidance mode offers a gentle one-line orientation and reflection prompts.
-    Study mode stays more text-forward and analytical.
+<div class="mode-row">
+  <div class="mode-sub">
+    Guidance mode offers gentle reflection. Study mode focuses more directly on the text.
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -247,7 +297,7 @@ with st.form("noor_form", clear_on_submit=False):
     submitted = st.form_submit_button("Seek Guidance")
 
 # =======================
-# System prompt
+# Prompt builder
 # =======================
 def build_system_prompt(concise: bool, mode: str) -> str:
     orientation_rule = ""
@@ -314,7 +364,7 @@ Verse refs:
     return cleaned[:3]
 
 # =======================
-# Quiet reflection feature (purely optional)
+# Quiet reflection feature
 # =======================
 def render_quiet_reflection():
     st.markdown("""
@@ -329,33 +379,35 @@ def render_quiet_reflection():
 """, unsafe_allow_html=True)
 
 # =======================
-# Main pipeline: retrieve -> answer (stream)
+# Main pipeline (retrieve -> stream with retry)
 # =======================
 if submitted:
     q = (user_question or "").strip()
     if not q:
         st.stop()
 
-    # Non-blocking clarifier (stored for display; does not halt answers)
+    # Non-blocking clarifier (does not halt answers)
     st.session_state.clarifier = maybe_make_clarifying_question(q) if mode == "Guidance" else ""
 
-    retrieved = retrieve_verses(q, top_k=top_k)
-
+    retrieved = retrieve_verses(q, top_k=DEFAULT_TOP_K)
     if not retrieved:
         st.warning("Noor couldn’t confidently retrieve relevant verses from the local dataset. Try rephrasing.")
         st.stop()
 
-    verse_context_lines = [f'{v["surah"]}:{v["ayah"]} — {v["text"]}' for v in retrieved]
+    # Build smaller verse context (stability)
+    verse_context_lines = [
+        f'{int(v["surah"])}:{int(v["ayah"])} — {clip(v["text"], 360)}'
+        for v in retrieved
+    ]
     verse_context = "\n".join(verse_context_lines)
 
     st.session_state.last_retrieved = retrieved
 
-    # Keep light history
+    # Keep light history to avoid bloat
     st.session_state.history.append({"role": "user", "content": q})
     st.session_state.history = st.session_state.history[-8:]
 
     system_prompt = build_system_prompt(concise=concise, mode=mode)
-
     user_prompt = f"""
 User question:
 {q}
@@ -368,49 +420,73 @@ You MUST ground your answer in these retrieved Qur'an verses:
     box = st.empty()
     full_text = ""
 
-    with st.spinner("Noor is reflecting..."):
-        stream = client.chat.completions.create(
-            model="gpt-4o-mini",
-            temperature=0.6,
-            stream=True,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                *st.session_state.history[-6:],
-                {"role": "user", "content": user_prompt},
-            ],
-        )
+    # Streaming with retry + friendly handling
+    max_attempts = 2
+    last_err = None
 
-        for chunk in stream:
-            delta = chunk.choices[0].delta
-            if delta and getattr(delta, "content", None):
-                full_text += delta.content
-                box.markdown(
-                    f'<div class="noor-box"><div class="noor-answer">{full_text}</div></div>',
-                    unsafe_allow_html=True
+    for attempt in range(max_attempts):
+        try:
+            with st.spinner("Noor is reflecting..."):
+                # tiny delay so spinner reliably shows before streaming begins
+                time.sleep(0.25)
+
+                stream = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    temperature=0.6,
+                    stream=True,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        *st.session_state.history[-6:],
+                        {"role": "user", "content": user_prompt},
+                    ],
                 )
 
+                for chunk in stream:
+                    delta = chunk.choices[0].delta
+                    if delta and getattr(delta, "content", None):
+                        full_text += delta.content
+                        box.markdown(
+                            f'<div class="noor-box"><div class="noor-answer">{full_text}</div></div>',
+                            unsafe_allow_html=True
+                        )
+
+            last_err = None
+            break
+
+        except (RateLimitError, APITimeoutError) as e:
+            last_err = e
+            time.sleep(0.9 * (attempt + 1))
+        except APIError as e:
+            # Includes InternalServerError (500) and other API errors
+            last_err = e
+            time.sleep(0.9 * (attempt + 1))
+        except Exception as e:
+            last_err = e
+            time.sleep(0.9 * (attempt + 1))
+
+    if last_err:
+        st.warning("A temporary server issue occurred while Noor was responding. Please try again.")
+        st.stop()
+
+    # Persist answer
     st.session_state.last_answer = full_text
     st.session_state.history.append({"role": "assistant", "content": full_text})
     st.session_state.history = st.session_state.history[-8:]
 
+    # Follow-ups (cached)
     try:
-        refs = "\n".join([f'{v["surah"]}:{v["ayah"]}' for v in retrieved[:6]])
+        refs = "\n".join([f'{int(v["surah"])}:{int(v["ayah"])}' for v in retrieved[:6]])
         st.session_state.followups = generate_followups(q, refs)
     except Exception:
         st.session_state.followups = []
 
 # =======================
-# Post-answer features (optional)
+# Post-answer features
 # =======================
 if st.session_state.last_answer and st.session_state.last_retrieved:
-    # Guidance-mode gentle clarifier (non-blocking)
     if st.session_state.clarifier:
-        st.markdown(
-            f'<div class="small-note">{st.session_state.clarifier}</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown(f'<div class="small-note">{st.session_state.clarifier}</div>', unsafe_allow_html=True)
 
-    # Quiet Reflection toggle button (does not affect answer flow)
     col1, col2 = st.columns([1, 1])
     with col1:
         if st.button("Quiet Reflection (10s)"):
@@ -428,7 +504,6 @@ if st.session_state.last_answer and st.session_state.last_retrieved:
     if st.session_state.quiet_reflection:
         render_quiet_reflection()
 
-    # Follow-up buttons (keeps engagement)
     if st.session_state.followups:
         st.markdown("### Explore further")
         cols = st.columns(3)
@@ -440,7 +515,7 @@ if st.session_state.last_answer and st.session_state.last_retrieved:
 
     with st.expander("Show retrieved verses (what Noor used)"):
         for v in st.session_state.last_retrieved:
-            st.markdown(f"**({v['surah']}:{v['ayah']})** — {v['text']}")
+            st.markdown(f"**({int(v['surah'])}:{int(v['ayah'])})** — {v['text']}")
 
     with st.expander("Show surrounding verses (context window)"):
         verses_all, _, _ = load_quran_and_index()
@@ -449,7 +524,7 @@ if st.session_state.last_answer and st.session_state.last_retrieved:
             around = get_surrounding(verses_all, s, a, window=2)
             st.markdown(f"**Context around ({s}:{a})**")
             for x in around:
-                st.markdown(f"- **({x['surah']}:{x['ayah']})** — {x['text']}")
+                st.markdown(f"- **({int(x['surah'])}:{int(x['ayah'])})** — {x['text']}")
             st.divider()
 
 # =======================
