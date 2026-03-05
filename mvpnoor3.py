@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-NoorMVP — Qur’an-first Streamlit app (stable + clean UI)
-
-This version includes:
-- Clean header + your “safe to explore” line
-- Guidance vs Study mode (tone feature, not required)
-- Concise answer checkbox (kept)
-- Removes the “Verses” selector (fixed internally)
-- Brighter, softer desktop readability (less harsh)
-- Premium input/button styling
-- Qur’an verse retrieval (TF-IDF) from data/quran_en.json
-- Streaming answer with: clip context + auto-retry + graceful failure (handles intermittent OpenAI 500s)
-- Explore further (follow-up buttons + show retrieved + context window)
-- Quiet Reflection toggle (optional, doesn’t interrupt flow)
-
-Repo requirements:
-- data/quran_en.json must exist
-- requirements.txt must include: streamlit, openai, scikit-learn, numpy
-"""
-
 import os
 import json
 import time
@@ -42,9 +22,9 @@ st.set_page_config(
 )
 
 # =======================
-# Styling
+# Styling (IMPORTANT: keep this as ONE triple-quoted string)
 # =======================
-st.markdown("""
+CSS = """
 <style>
 html, body { background-color: #0a0a0f !important; }
 .stApp, .block-container { background-color: #0a0a0f !important; }
@@ -64,7 +44,7 @@ html, body { background-color: #0a0a0f !important; }
 .ai-guide { color: #E3E3E3; font-size: 16px; margin-top: 10px; margin-bottom: 8px; }
 .small-note { color: #B5B5B5; font-size: 12px; margin-top: 4px; margin-bottom: 10px; }
 
-/* Answer box + softer bright text (less harsh than pure white) */
+/* Answer box + softer bright text */
 .noor-box {
     background: rgba(255,255,255,0.025);
     border: 1px solid rgba(255,255,255,0.05);
@@ -119,7 +99,8 @@ textarea:focus {
 /* Featured verse */
 .featured-verse { color: #C0C0C0; font-size: 13px; margin-top: 26px; text-align: center; }
 </style>
-""", unsafe_allow_html=True)
+"""
+st.markdown(CSS, unsafe_allow_html=True)
 
 # =======================
 # Header
@@ -155,14 +136,13 @@ client = OpenAI(api_key=api_key)
 # Qur'an dataset + retrieval
 # =======================
 DATA_PATH = "data/quran_en.json"
-DEFAULT_TOP_K = 6  # removed from UI to keep interface simple
+DEFAULT_TOP_K = 6  # fixed to avoid UI clutter
 
 @st.cache_resource
 def load_quran_and_index() -> Tuple[List[Dict], TfidfVectorizer, np.ndarray]:
     if not os.path.exists(DATA_PATH):
         raise FileNotFoundError(
-            f"Missing {DATA_PATH}. Create it as a JSON list of objects: "
-            f'{{"surah":1,"ayah":1,"text":"..."}}'
+            f"Missing {DATA_PATH}. You need: data/quran_en.json"
         )
 
     with open(DATA_PATH, "r", encoding="utf-8") as f:
@@ -171,10 +151,9 @@ def load_quran_and_index() -> Tuple[List[Dict], TfidfVectorizer, np.ndarray]:
     if not isinstance(verses, list) or not verses:
         raise ValueError(f"{DATA_PATH} must be a non-empty JSON list.")
 
-    # Minimal validation
     for i, v in enumerate(verses[:100]):
         if not isinstance(v, dict) or not all(k in v for k in ("surah", "ayah", "text")):
-            raise ValueError(f"Verse at index {i} missing required keys (surah, ayah, text).")
+            raise ValueError(f"Verse at index {i} missing keys: surah, ayah, text")
 
     texts = [v["text"] for v in verses]
 
@@ -210,7 +189,6 @@ def get_surrounding(verses: List[Dict], surah: int, ayah: int, window: int = 2) 
     return out
 
 def clip(text: str, n: int = 360) -> str:
-    """Keep prompts smaller for reliability."""
     text = (text or "").strip()
     return text if len(text) <= n else text[:n].rstrip() + "…"
 
@@ -265,16 +243,13 @@ def maybe_make_clarifying_question(user_q: str) -> str:
     return ""
 
 # =======================
-# Controls (concise checkbox stays)
+# Controls (keep concise checkbox)
 # =======================
-colA, colB, colC = st.columns([1.0, 1.0, 1.0])
+colA, colB = st.columns([1.0, 1.0])
 with colA:
     mode = st.selectbox("Mode", ["Guidance", "Study"], index=0)
 with colB:
     concise = st.checkbox("Concise answer", value=True)
-with colC:
-    # Small empty spacer to keep layout balanced (no extra control)
-    st.markdown("")
 
 st.markdown("""
 <div class="mode-row">
@@ -299,14 +274,15 @@ with st.form("noor_form", clear_on_submit=False):
 # =======================
 # Prompt builder
 # =======================
-def build_system_prompt(concise: bool, mode: str) -> str:
+def build_system_prompt(concise_flag: bool, mode_value: str) -> str:
     orientation_rule = ""
-    if mode == "Guidance":
+    if mode_value == "Guidance":
         orientation_rule = """
 Perception & intent (feature):
 - Begin with ONE short line that either (a) clarifies intent (clarity/comfort/direction/correction) or (b) gently reframes the question.
 - Keep it universal, grounded, and non-mystical.
 """
+    style_rule = "- Be concise, clean, and avoid rambling." if concise_flag else "- Be thorough but still readable. Keep sections tight."
     return f"""
 You are Noor, a Qur’an-first AI guide.
 
@@ -319,14 +295,14 @@ Non-negotiable rules:
 {orientation_rule}
 
 Output format (markdown):
-{"0) **One-line orientation**" if mode == "Guidance" else ""}
+{"0) **One-line orientation**" if mode_value == "Guidance" else ""}
 1) **Relevant verses** (bullet list: short quote or paraphrase + citation)
 2) **Core meaning**
 3) **Practical reflection**
 4) **If you want to go deeper** (2–4 suggested angles)
 
 Style:
-{"- Be concise, clean, and avoid rambling." if concise else "- Be thorough but still readable. Keep sections tight."}
+{style_rule}
 """.strip()
 
 # =======================
@@ -386,7 +362,6 @@ if submitted:
     if not q:
         st.stop()
 
-    # Non-blocking clarifier (does not halt answers)
     st.session_state.clarifier = maybe_make_clarifying_question(q) if mode == "Guidance" else ""
 
     retrieved = retrieve_verses(q, top_k=DEFAULT_TOP_K)
@@ -394,7 +369,6 @@ if submitted:
         st.warning("Noor couldn’t confidently retrieve relevant verses from the local dataset. Try rephrasing.")
         st.stop()
 
-    # Build smaller verse context (stability)
     verse_context_lines = [
         f'{int(v["surah"])}:{int(v["ayah"])} — {clip(v["text"], 360)}'
         for v in retrieved
@@ -403,11 +377,10 @@ if submitted:
 
     st.session_state.last_retrieved = retrieved
 
-    # Keep light history to avoid bloat
     st.session_state.history.append({"role": "user", "content": q})
     st.session_state.history = st.session_state.history[-8:]
 
-    system_prompt = build_system_prompt(concise=concise, mode=mode)
+    system_prompt = build_system_prompt(concise, mode)
     user_prompt = f"""
 User question:
 {q}
@@ -420,14 +393,13 @@ You MUST ground your answer in these retrieved Qur'an verses:
     box = st.empty()
     full_text = ""
 
-    # Streaming with retry + friendly handling
     max_attempts = 2
     last_err = None
 
     for attempt in range(max_attempts):
         try:
             with st.spinner("Noor is reflecting..."):
-                # tiny delay so spinner reliably shows before streaming begins
+                # ensure spinner reliably shows before stream begins
                 time.sleep(0.25)
 
                 stream = client.chat.completions.create(
@@ -457,7 +429,6 @@ You MUST ground your answer in these retrieved Qur'an verses:
             last_err = e
             time.sleep(0.9 * (attempt + 1))
         except APIError as e:
-            # Includes InternalServerError (500) and other API errors
             last_err = e
             time.sleep(0.9 * (attempt + 1))
         except Exception as e:
@@ -468,12 +439,10 @@ You MUST ground your answer in these retrieved Qur'an verses:
         st.warning("A temporary server issue occurred while Noor was responding. Please try again.")
         st.stop()
 
-    # Persist answer
     st.session_state.last_answer = full_text
     st.session_state.history.append({"role": "assistant", "content": full_text})
     st.session_state.history = st.session_state.history[-8:]
 
-    # Follow-ups (cached)
     try:
         refs = "\n".join([f'{int(v["surah"])}:{int(v["ayah"])}' for v in retrieved[:6]])
         st.session_state.followups = generate_followups(q, refs)
