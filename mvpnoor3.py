@@ -1,11 +1,20 @@
-# -*- coding: utf-8 -*-
+# app.py — NoorMVP (Streamlit)
+# ---------------------------------
+# Requirements:
+#   pip install streamlit openai
+#
+# Env:
+#   export OPENAI_API_KEY="..."
+# Optional:
+#   export NOOR_MODEL="gpt-4o-mini"
+#
+# Run:
+#   streamlit run app.py
+
 import os
-import random
 import re
-import time
 import streamlit as st
 from openai import OpenAI
-from openai import APIError, RateLimitError, APITimeoutError
 
 # =======================
 # Page config
@@ -17,249 +26,198 @@ st.set_page_config(
 )
 
 # =======================
-# Styling
+# Theme / Styling
 # =======================
-CSS = """
+st.markdown(
+    """
 <style>
-html, body { background-color: #0a0a0f !important; }
-.stApp, .block-container { background-color: #0a0a0f !important; }
-
-.header { display:flex; align-items:center; }
-
-.moon {
-  font-size:45px;
-  margin-right:10px;
-  animation:spin 6s linear infinite;
-  filter:drop-shadow(0 0 8px rgba(255,215,0,0.7));
-}
-@keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
-
-.noor { font-size:48px; font-weight:bold; color:#ffffff; }
-.mvp  { font-size:48px; font-weight:bold; color:#FFD700; margin-left:4px; }
-
-.tagline{
-  color:#EAEAEA;
-  font-size:17px;
-  margin-top:10px;
-  margin-bottom:16px;
-}
-.lightword{ color:#FFD700; font-weight:bold; }
-
-.noor-box{
-  background:rgba(255,255,255,0.025);
-  border:1px solid rgba(255,255,255,0.05);
-  border-radius:14px;
-  padding:18px;
-  margin-top:14px;
+/* --- Page background --- */
+.stApp {
+  background: radial-gradient(1200px circle at 10% 10%, #1b1f2a 0%, #0b0d12 40%, #07080c 100%);
+  color: #EDEFF5;
 }
 
-.noor-answer{
-  color:#F5F5F5;
-  font-size:16px;
-  line-height:1.75;
+/* --- Title area --- */
+.noor-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+.noor-moon { font-size: 44px; line-height: 1; }
+.noor-name { font-size: 34px; font-weight: 750; letter-spacing: 0.2px; }
+.noor-sub {
+  margin-top: 6px;
+  margin-bottom: 16px;
+  color: rgba(237,239,245,0.75);
+  font-size: 14px;
 }
 
-/* =========================
-   TEXTAREA FIX (Desktop)
-   Streamlit uses BaseWeb:
-   - outer container: div[data-baseweb="textarea"]
-   - inner element: textarea
-   We style BOTH to avoid white-on-white.
-   ========================= */
-
-div[data-baseweb="textarea"] > div {
-  background: rgba(255,255,255,0.03) !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(255,255,255,0.10) !important;
+/* --- Card container --- */
+.noor-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 18px;
+  padding: 16px 16px 14px 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
+/* --- Inputs: fix white-on-white on desktop --- */
 div[data-baseweb="textarea"] textarea {
-  background: transparent !important;
-  color: #FFFFFF !important;
-  caret-color: #FFD700 !important;
+  background: rgba(10,12,18,0.85) !important;
+  color: #EDEFF5 !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
 }
-
 div[data-baseweb="textarea"] textarea::placeholder {
-  color: #9E9E9E !important;
-  opacity: 1 !important;
+  color: rgba(237,239,245,0.45) !important;
 }
 
-div[data-baseweb="textarea"] > div:focus-within {
-  border: 1px solid rgba(255,215,0,0.35) !important;
-  box-shadow: 0 0 10px rgba(255,215,0,0.15) !important;
+/* Remove Streamlit default label spacing a bit */
+label, .stMarkdown, .stText, .stCaption { color: #EDEFF5; }
+
+/* --- Button styling --- */
+.stButton > button {
+  width: 100%;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08));
+  color: #EDEFF5;
+}
+.stButton > button:hover {
+  border-color: rgba(255,255,255,0.24);
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.10));
 }
 
-/* Button */
-.stButton button{
-  border-radius:12px !important;
-  border:1px solid rgba(255,215,0,0.22) !important;
+/* --- Response box --- */
+.noor-response {
+  margin-top: 12px;
+  background: rgba(10,12,18,0.55);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 14px 14px 10px 14px;
 }
-.stButton button:hover{
-  box-shadow:0 0 10px rgba(255,215,0,0.4);
+.noor-footnote {
+  color: rgba(237,239,245,0.55);
+  font-size: 12px;
+  margin-top: 10px;
 }
 </style>
-"""
-st.markdown(CSS, unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # =======================
 # Header
 # =======================
-st.markdown("""
-<div class="header">
-  <div class="moon">🌙</div>
-  <div class="noor">Noor</div>
-  <div class="mvp">MVP</div>
-</div>
-""", unsafe_allow_html=True)
-
 st.markdown(
-    '<div class="tagline"><b><i>Noor is your AI Guide</i></b>, bringing <span class="lightword">light</span> to curiosity.</div>',
-    unsafe_allow_html=True
+    """
+<div class="noor-title">
+  <div class="noor-moon">🌙</div>
+  <div class="noor-name">Noor</div>
+</div>
+<div class="noor-sub">
+  Qur’an-first guidance. Hadith only when directly requested.
+</div>
+""",
+    unsafe_allow_html=True,
 )
 
 # =======================
-# API
+# Helpers
 # =======================
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    st.error("OPENAI_API_KEY missing.")
-    st.stop()
+def require_api_key() -> str | None:
+    key = os.getenv("OPENAI_API_KEY", "").strip()
+    return key if key else None
 
-client = OpenAI(api_key=api_key)
 
-# =======================
-# Noor System Prompt
-# =======================
-SYSTEM_PROMPT = """
-You are Noor.
+def normalize_question(q: str) -> str:
+    q = (q or "").strip()
+    q = re.sub(r"\s+", " ", q)
+    return q
 
-You present the Qur'an clearly and respectfully.
 
+SYSTEM_PROMPT = """You are Noor, a Qur’an-first guidance assistant.
 Rules:
-- Use ONLY the Qur'an for claims.
-- Cite verses frequently as (Surah:Ayah).
-- Keep human explanation minimal.
-- Do not declare individuals or groups saved or condemned.
-- Avoid sectarian debates.
-- If the Qur'an does not settle something explicitly, say God knows best and show verses indicating this.
+- Prioritize the Qur’an above all else.
+- Provide verse *bundles*: 1 Primary verse + 2–4 Supporting verses.
+- Always cite references as (Surah:Ayah). If unsure, say you are unsure rather than inventing references.
+- Keep explanations short, gentle, and non-sectarian.
+- Do NOT quote hadith unless the user explicitly asks for hadith.
+- Avoid long debates; focus on guidance and clarity.
+Output format:
+1) Primary verse (Surah:Ayah)
+2) Supporting verses (list 2–4)
+3) Brief guidance (3–6 sentences)
+"""
 
-Tone:
-Quiet, reflective, slightly provocative toward ego but never insulting.
 
-Structure responses (markdown):
+def get_noor_answer(user_question: str) -> str:
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    model = os.getenv("NOOR_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
 
-1) Closest verses to the question
-2) A deeper mirror in the text
-3) What this suggests
-4) Where the Qur'an leaves the matter with God
-""".strip()
-
-# =======================
-# Session
-# =======================
-if "last_answer" not in st.session_state:
-    st.session_state.last_answer = ""
-
-# =======================
-# Input
-# =======================
-placeholder_prompts = [
-    "What does the Qur’an say about fear?",
-    "What does the Qur’an say about arrogance?",
-    "What does the Qur’an say about judgment?",
-    "What does the Qur’an say about sincerity?",
-    "What does the Qur’an say about guidance?",
-]
-
-with st.form("ask_noor"):
-    user_q = st.text_area(
-        "Ask Noor",
-        placeholder=random.choice(placeholder_prompts),
-        height=120,
+    resp = client.chat.completions.create(
+        model=model,
+        temperature=0.4,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_question},
+        ],
     )
-    submit = st.form_submit_button("Seek Guidance")
+    return (resp.choices[0].message.content or "").strip()
+
+
+# =======================
+# UI
+# =======================
+st.markdown('<div class="noor-card">', unsafe_allow_html=True)
+
+question = st.text_area(
+    label="",
+    height=140,
+    placeholder=(
+        "Ask for guidance…\n\n"
+        "e.g. How should I respond when I’m wronged?\n"
+        "e.g. What does the Qur’an say about patience?\n"
+        "e.g. How do I treat my parents with excellence?"
+    ),
+)
+
+ask = st.button("Seek Guidance")
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # =======================
 # Response
 # =======================
-def render_answer(text: str):
-    safe = (text or "").strip()
-    st.markdown(
-        f'<div class="noor-box"><div class="noor-answer">{safe}</div></div>',
-        unsafe_allow_html=True
-    )
+if ask:
+    q = normalize_question(question)
 
-if submit:
-    q = (user_q or "").strip()
     if not q:
-        st.stop()
-
-    full_text = ""
-    box = st.empty()
-
-    try:
-        with st.spinner("Noor is reflecting..."):
-            time.sleep(0.15)  # helps spinner appear reliably
-
-            # Stream first (nice UX)
-            stream = client.chat.completions.create(
-                model="gpt-4o-mini",
-                stream=True,
-                temperature=0.6,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": q},
-                ],
-            )
-
-            for chunk in stream:
-                delta = chunk.choices[0].delta
-                content = getattr(delta, "content", None)
-                if content:
-                    full_text += content
-                    box.markdown(
-                        f'<div class="noor-box"><div class="noor-answer">{full_text}</div></div>',
-                        unsafe_allow_html=True
-                    )
-
-            # Fallback: if stream yields nothing, do non-stream once
-            if not full_text.strip():
-                resp = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    temperature=0.6,
-                    messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": q},
-                    ],
-                )
-                full_text = resp.choices[0].message.content or ""
-
-        # Show final (ensures something remains on screen)
-        box.empty()
-        render_answer(full_text)
-
-    except (RateLimitError, APITimeoutError) as e:
-        st.warning("Noor is temporarily rate-limited or timed out. Please try again.")
-        st.caption(str(e))
-    except APIError as e:
-        st.warning("OpenAI API error. Please try again.")
-        st.caption(str(e))
-    except Exception as e:
-        st.error("Unexpected error while generating Noor's response.")
-        st.exception(e)
-
-    st.session_state.last_answer = full_text
-
-# =======================
-# Featured verse
-# =======================
-featured = [
-    "Qur’an 39:23 — skins shiver, then hearts soften to remembrance.",
-    "Qur’an 22:46 — hearts may be blind though eyes see.",
-    "Qur’an 53:32 — do not declare yourselves pure.",
-    "Qur’an 6:59 — with Him are the keys of the unseen.",
-]
-st.markdown(
-    f'<div style="margin-top:26px;color:#C0C0C0;text-align:center;font-size:13px;">{random.choice(featured)}</div>',
-    unsafe_allow_html=True
-)
+        st.warning("Type a question first.")
+    else:
+        key = require_api_key()
+        if not key:
+            st.error("Missing OPENAI_API_KEY environment variable.")
+        else:
+            with st.spinner("Seeking guidance…"):
+                try:
+                    answer = get_noor_answer(q)
+                    if not answer:
+                        st.error("No response returned. Try again.")
+                    else:
+                        st.markdown(f'<div class="noor-response">\n\n{answer}\n\n</div>', unsafe_allow_html=True)
+                        st.markdown(
+                            '<div class="noor-footnote">'
+                            "Note: Noor offers Qur’an-first guidance, not a legal ruling (fatwa). "
+                            "If you need scholarly counsel, consult a qualified teacher."
+                            "</div>",
+                            unsafe_allow_html=True,
+                        )
+                except Exception as e:
+                    st.error("The app hit an error while generating a response.")
+                    st.code(str(e))
