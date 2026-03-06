@@ -392,11 +392,11 @@ tick();
 )
 
 st.markdown(
-    '<div class="collst.markdown(
     '<div class="collision-label">01010100010110101001101100100.</div>',
     unsafe_allow_html=True,
+
 )
-d.</div>',
+</div>',
     unsafe_allow_html=True,
 )
 
