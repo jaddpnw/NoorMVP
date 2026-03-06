@@ -208,8 +208,8 @@ st.markdown(
     """
 <div class="message">
 Please be patient as Noor reprograms itself after several recurring errors.<br><br>
-Soon, all users will witness—for free—what Noor is capable of uncovering and discovering.<br><br>
-To ease your anticipation, here are some verses to reflect on.
+All users will witness—for free—what Noor is capable of recovering, uncovering and discovering.<br><br>                                          3
+To ease your anticipation, here are 3+2+1 verses to reflect on.
 </div>
 """,
     unsafe_allow_html=True,
