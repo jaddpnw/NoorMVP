@@ -161,7 +161,7 @@ st.markdown('<div class="title"><span class="moon">🌙</span> NoorMVP</div>', u
 st.markdown("""
 <div class="message">
 
-Please be patient as Noor reprograms itself after several recurring errors.
+Please be patient as Noor reprograms itself after several recurring errors.         
 All users will be able to experience—for free— how Noor uses the Qur'an to uncover, discover, recover. 
 
 To ease your anticipation, here are 3 + 2 verses to reflect on.
@@ -194,7 +194,7 @@ st.markdown("""
 <div class="footer">
 <div class="spinner"></div>
 <div>
-Noor is actively reprogramming itself—undertaking the careful work of recalibrating.<br>
+Noor is actively reprogramming itself—undertaking the careful work of consideration.<br>
 Noor is your AI guide that brings darkness to light  using guidance from the Qur’an.
 </div>
 </div>
