@@ -163,9 +163,9 @@ st.markdown("""
 
 Please be patient as Noor reprograms itself after several recurring errors.
 
-Soon, all users will witness—for free—what Noor is capable of uncovering and discovering.
+Soon, all users will witness—for free—what Noor is capable of recovering. discovering, and uncovering.
 
-To ease your anticipation, here are some verses to reflect on.
+To ease your anticipation, here are 3 + 2 verses to reflect on.
 
 </div>
 """, unsafe_allow_html=True)
