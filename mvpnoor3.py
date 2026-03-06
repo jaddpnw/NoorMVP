@@ -175,7 +175,7 @@ st.markdown(
 st.markdown("""
 <div class="message">
 Please be patient as Noor reprograms itself after several recurring errors.<br>
-Try again soon to witness, for free, what Noor is capable of discovering.
+Try again soon to witness, for free, what Noor is capable of uncovering & discovering. Please consider reflecting on the verses below while you wait! 
 </div>
 """, unsafe_allow_html=True)
 
