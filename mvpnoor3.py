@@ -189,8 +189,8 @@ st.markdown("""
 <div class="footer">
 <div class="spinner"></div>
 <div>
-Noor is your AI guide that brings light to your inquiries through the Qur’an.<br>
-Noor is preparing to enhance your experience—bringing reflection, context, and evidence to the claims it presents.
+Noor is your AI guide that brings light to "important ongoing issues" using guidance from the Qur’an.<br>
+Prepare for an enhanced experience this time around-—Noor will be bringing reflection, context, and evidence to the claims it presents.
 </div>
 </div>
 </div>
