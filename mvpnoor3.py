@@ -180,7 +180,7 @@ st.markdown(f"""
 </div>
 
 <div class="sub-verses">
-49:11 · 49:12
+49:11 · 24:11
 </div>
 """, unsafe_allow_html=True)
 
@@ -195,8 +195,8 @@ st.markdown("""
 <div class="footer">
 <div class="spinner"></div>
 <div>
-Noor is actively reprogramming itself—undertaking the careful work of recalibrating its responses and determining the proper measure by which it presents what it discovers.<br>
-Noor is your AI guide that brings light to your inquiries through the Qur’an.
+Noor is actively reprogramming itself—undertaking the careful work of recalibrating.<br>
+Noor is your AI guide that brings darkness to light  using guidance from the Qur’an.
 </div>
 </div>
 </div>
