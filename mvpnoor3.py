@@ -184,7 +184,7 @@ st.markdown(
 <div class="message">
 Sorry for the delay. Noor is reprograming itself after several recurring errors. Thank's for your understanding.<br><br>                             
 <br><br>
-Pleae come back later. 
+Please come back later. 
 </div>
 """,
     unsafe_allow_html=True,
