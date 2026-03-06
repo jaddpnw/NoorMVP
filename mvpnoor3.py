@@ -52,7 +52,7 @@ st.markdown('<div class="title">🌙 NoorMVP</div>', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="message">
-Thank you for your patience as Noor, once again, returns to building something real.<br><br>
+Try again soon to witness, for FREE, what Noor is capable of discovering, uncovering, and bringing into the light.<br><br>
 While you wait, please consider reflecting on these verses:
 </div>
 """, unsafe_allow_html=True)
