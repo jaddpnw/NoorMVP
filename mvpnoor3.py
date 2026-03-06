@@ -182,7 +182,7 @@ st.markdown(
 st.markdown(
     """
 <div class="message">
-Please be patient as Noor reprograms itself after several recurring errors.<br><br>
+Sorry for the delay. Noor is reprograming itself after several recurring errors. Thank you for understanding.<br><br>
 Retruning soon—for free—see how Noor helps recover, discover, and uncover parts of yourself that may have been buried, forgotten, or lost.
 <br><br>
 While  waiting, here are 3+2+1 verses to reflect on.
