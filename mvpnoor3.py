@@ -208,7 +208,7 @@ st.markdown(
     """
 <div class="message">
 Please be patient as Noor reprograms itself after several recurring errors.<br><br>
-All users will witness—for free—what Noor is capable of recovering, uncovering and discovering.<br><br>                                          3
+All users will witness—for free—what Noor is capable of recovering, uncovering and discovering.<br><br>                                         
 To ease your anticipation, here are 3+2+1 verses to reflect on.
 </div>
 """,
@@ -402,8 +402,8 @@ st.markdown(
     <div class="footer">
         <div class="spinner"></div>
         <div>
-            Noor is actively reprogramming itself—undertaking the careful work of recalibrating its responses and determining the proper measure by which it presents what it discovers.<br>
-            Noor is your AI guide that brings light to your inquiries through the Qur’an.
+            Noor is actively reprogramming itself—undertaking the careful work of consideration.<br>
+            Noor is your AI guide that brings darkness to light through the Qur’an.
         </div>
     </div>
 </div>
