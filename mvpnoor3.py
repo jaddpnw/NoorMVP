@@ -162,8 +162,7 @@ st.markdown("""
 <div class="message">
 
 Please be patient as Noor reprograms itself after several recurring errors.
-
-Soon, all users will witness—for free—what Noor is capable of recovering. discovering, and uncovering.
+All users will be able to experience—for free— how exactly Noor sheds light upon  discovery, and recovery.
 
 To ease your anticipation, here are 3 + 2 verses to reflect on.
 
