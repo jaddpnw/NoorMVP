@@ -162,7 +162,7 @@ st.markdown("""
 <div class="message">
 
 Please be patient as Noor reprograms itself after several recurring errors.
-All users will be able to experience—for free— how exactly Noor sheds light upon  discovery, and recovery.
+All users will be able to experience—for free— how Noor uses the Qur'an to uncover, discover, recover. 
 
 To ease your anticipation, here are 3 + 2 verses to reflect on.
 
