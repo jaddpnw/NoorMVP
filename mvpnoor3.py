@@ -226,7 +226,7 @@ st.markdown(
 </div>
 
 <div class="sub-verses">
-    49:11 · 49:12
+    49:11 · 24:11
 </div>
 """,
     unsafe_allow_html=True,
@@ -392,7 +392,11 @@ tick();
 )
 
 st.markdown(
-    '<div class="collision-label">29:41 drifts in its own field.</div>',
+    '<div class="collst.markdown(
+    '<div class="collision-label">01010100010110101001101100100.</div>',
+    unsafe_allow_html=True,
+)
+d.</div>',
     unsafe_allow_html=True,
 )
 
