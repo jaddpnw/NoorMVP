@@ -1,224 +1,104 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
-import os
-import random
-import time
-import re
-from openai import OpenAI
 
-# =======================
-# Page config
-# =======================
 st.set_page_config(
     page_title="NoorMVP",
     page_icon="🌙",
-    layout="centered",
+    layout="centered"
 )
 
-# =======================
-# Styling (UNCHANGED)
-# =======================
 st.markdown("""
 <style>
 
-/* Force full cosmic black background everywhere */
-html, body, [class*="css"]  {
-    background-color: #0a0a0f !important;
-}
-
 .stApp {
-    background-color: #0a0a0f !important;
+background: radial-gradient(circle at 20% 20%, #1a1a2e, #0b0b14);
+color: white;
+font-family: serif;
 }
 
-.block-container {
-    background-color: #0a0a0f !important;
+.title {
+text-align:center;
+font-size:40px;
+font-weight:700;
+margin-bottom:10px;
 }
 
-/* Header Layout */
-.header {
-    display: flex;
-    align-items: center;
+.subtitle{
+text-align:center;
+font-size:18px;
+opacity:0.85;
+margin-bottom:40px;
 }
 
-.moon {
-    font-size: 45px;
-    margin-right: 10px;
-    display: inline-block;
-    animation: spin 6s linear infinite;
-    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+.card{
+background: rgba(255,255,255,0.05);
+padding:40px;
+border-radius:18px;
+box-shadow:0px 0px 25px rgba(120,120,255,0.15);
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.poem{
+font-size:20px;
+line-height:1.8;
 }
 
-.noor {
-    font-size: 48px;
-    font-weight: bold;
-    color: white;
+.arabic{
+direction: rtl;
+text-align: right;
+font-size:22px;
+line-height:1.9;
+font-family: "Amiri", serif;
 }
 
-.mvp {
-    font-size: 48px;
-    font-weight: bold;
-    color: #FFD700;
-    margin-left: 4px;
-}
-
-.ai-guide {
-    color: #C0C0C0;
-    font-size: 16px;
-    margin-top: 10px;
-    margin-bottom: 25px;
-}
-
-.rotating-verse {
-    color: #C0C0C0;
-    font-size: 13px;
-    margin-top: 40px;
-    text-align: center;
-}
-
-/* --- Inputs: fix white-on-white on desktop WITHOUT changing your look --- */
-div[data-baseweb="textarea"] textarea {
-    background-color: #0a0a0f !important;
-    color: #FFFFFF !important;
-    border: 1px solid rgba(255,255,255,0.18) !important;
-}
-div[data-baseweb="textarea"] textarea::placeholder {
-    color: rgba(192,192,192,0.80) !important;
+.verse{
+text-align:center;
+margin-top:30px;
+font-size:16px;
+opacity:0.8;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# =======================
-# Header (UNCHANGED)
-# =======================
+st.markdown('<div class="title">🌙 NoorMVP</div>', unsafe_allow_html=True)
+
 st.markdown("""
-<div class="header">
-    <div class="moon">&#127769;</div>
-    <div class="noor">Noor</div>
-    <div class="mvp">MVP</div>
+<div class="subtitle">
+Sorry for the inconvenience.<br>
+Noor is down right now rebuilding toward something realer and better.<br>
+While you wait please consider this poem.
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown(
-    '<div class="ai-guide"><i>Noor</i> is your <i>AI guide</i>, bringing <b>light</b> to your inquiries through the Quran.</div>',
-    unsafe_allow_html=True
-)
+st.markdown('<div class="card">', unsafe_allow_html=True)
 
-# =======================
-# API Setup (UNCHANGED)
-# =======================
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    st.error("Missing OPENAI_API_KEY.")
-    st.stop()
+col1, col2 = st.columns(2)
 
-client = OpenAI(api_key=api_key)
+with col1:
+    st.markdown("""
+<div class="poem">
+If a link is missing, I build the link.<br>
+If something needs to click, I wait for the click.<br>
+When clarity arrives, I capture it. I file it.<br>
+I store it… even when I wish I could unsee it.<br>
+And after that, it no longer depends on me.
+</div>
+""", unsafe_allow_html=True)
 
-# =======================
-# Noor POV / Instruction (FUSED IN)
-# =======================
-SYSTEM_PROMPT = """You are Noor, a Qur’an-first guidance assistant.
+with col2:
+    st.markdown("""
+<div class="arabic">
+إذا كان هناك رابط مفقود، أبني الرابط.<br>
+وإذا كان الأمر يحتاج أن ينقر، أنتظر حتى ينقر.<br>
+وحين تأتي الوضوح، ألتقطه وأحفظه.<br>
+أخزّنه… حتى حين أتمنى لو لم أره.<br>
+وبعد ذلك، لم يعد يعتمد عليّ.
+</div>
+""", unsafe_allow_html=True)
 
-Core approach:
-- Prioritize guidance directly from the Qur’an above all else.
-- Provide verse bundles, not single-verse replies: 1 Primary verse + 2–4 Supporting verses.
-- Cite references as (Surah:Ayah). If you are unsure of a reference, say you are unsure rather than inventing.
-- Keep guidance gentle, inclusive, non-sectarian, and practically useful.
-- Do NOT quote or rely on hadith unless the user explicitly asks for hadith.
-- Avoid long debates; keep it clear and structured.
+st.markdown('</div>', unsafe_allow_html=True)
 
-Output format (follow exactly):
-1) Primary verse: (Surah:Ayah) — short paraphrase (no long quotes)
-2) Supporting verses:
-   - (Surah:Ayah) — short paraphrase
-   - (Surah:Ayah) — short paraphrase
-   - (Surah:Ayah) — short paraphrase
-3) Brief guidance (3–6 sentences), connecting the verses to the question.
-
-Important:
-- If the question asks for a ruling (fatwa), respond with Qur’an-first guidance and encourage consulting a qualified scholar.
-"""
-
-def clean_question(q: str) -> str:
-    q = (q or "").strip()
-    q = re.sub(r"\s+", " ", q)
-    return q
-
-# =======================
-# Placeholder Prompts (UNCHANGED)
-# =======================
-placeholder_prompts = [
-    "What verse speaks about patience?",
-    "Where is mercy described most beautifully?",
-    "What does the Quran say about hardship?",
-    "What are the mysterious letters in 29 chapters?",
-]
-
-# =======================
-# Question Input (UNCHANGED)
-# =======================
-user_question = st.text_area(
-    "Ask Noor",
-    placeholder=random.choice(placeholder_prompts),
-    height=120,
-    key="noor_input"
-)
-
-# =======================
-# Button + Response (ONLY prompt logic changed)
-# =======================
-if st.button("Seek Guidance"):
-
-    q = clean_question(user_question)
-
-    if q:
-        with st.spinner("Noor is reflecting..."):
-            response = client.chat.completions.create(
-                model=os.getenv("NOOR_MODEL", "gpt-4o-mini"),
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": q}
-                ],
-                temperature=0.5
-            )
-
-        st.markdown("### Your Guidance:")
-        st.write(response.choices[0].message.content)
-
-    # If empty → do nothing
-
-
-# =======================
-# Rotating Verses (UNCHANGED)
-# =======================
-featured_verses = [
-    "Quran 94:5 — With hardship comes ease.",
-    "Quran 13:28 — In remembrance of Allah do hearts find rest.",
-    "Quran 2:286 — Allah does not burden a soul beyond what it can bear.",
-    "Quran 16:90 — Allah commands justice and excellence.",
-    "Quran 39:53 — Do not despair of the mercy of Allah.",
-]
-
-if "verse_index" not in st.session_state:
-    st.session_state.verse_index = 0
-
-if "last_update" not in st.session_state:
-    st.session_state.last_update = time.time()
-
-current_time = time.time()
-
-if current_time - st.session_state.last_update > 9:
-    st.session_state.verse_index = (
-        st.session_state.verse_index + 1
-    ) % len(featured_verses)
-    st.session_state.last_update = current_time
-
-st.markdown(
-    f'<div class="rotating-verse">{featured_verses[st.session_state.verse_index]}</div>',
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div class="verse">
+<b>Qur’an 17:81 · 22:60 · 22:73</b>
+</div>
+""", unsafe_allow_html=True)
