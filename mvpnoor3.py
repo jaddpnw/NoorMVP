@@ -8,9 +8,9 @@ if "verse_index" not in st.session_state:
     st.session_state.verse_index = 0
 
 verse_states = [
-    ("22:60", "17:81", "22:73"),
-    ("17:81", "22:73", "22:60"),
-    ("22:73", "22:60", "17:81"),
+    ("39:53", "59:23", "2:177"),
+    ("59:23", "2:177", "39:53"),
+    ("2:177", "39:53", "59:23"),
 ]
 
 left_verse, center_verse, right_verse = verse_states[st.session_state.verse_index]
@@ -101,7 +101,7 @@ letter-spacing:2px;
 opacity:0.6;
 }
 
-.flywrap{
+.beewrap{
 position:fixed;
 top:0;
 left:0;
@@ -112,20 +112,20 @@ overflow:hidden;
 z-index:20;
 }
 
-.fly{
+.bee{
 position:absolute;
-font-size:13px;
-animation:flyx 11s linear infinite alternate, flyy 9s linear infinite alternate;
+font-size:14px;
+animation:beex 12s linear infinite alternate, beey 8s linear infinite alternate;
 }
 
-@keyframes flyx{
+@keyframes beex{
 from{left:10vw;}
 to{left:85vw;}
 }
 
-@keyframes flyy{
+@keyframes beey{
 from{top:20vh;}
-to{top:80vh;}
+to{top:78vh;}
 }
 
 .footerwrap{
@@ -182,9 +182,8 @@ st.markdown(
 st.markdown(
     """
 <div class="message">
-Sorry for the delay. Noor is reprograming itself after several recurring errors. Thank's for your understanding.<br><br>                             
-<br><br>
-Please come back later. 
+Sorry for the delay. Noor is reprogramming itself after several recurring errors. Thanks for your understanding.<br><br>
+Please come back later.
 </div>
 """,
     unsafe_allow_html=True,
@@ -201,7 +200,7 @@ st.markdown(
 </div>
 
 <div class="sub-verses">
-    49:11 · 24:11
+    16:68 · 16:114
 </div>
 """,
     unsafe_allow_html=True,
@@ -209,8 +208,8 @@ st.markdown(
 
 st.markdown(
     """
-<div class="flywrap">
-    <div class="fly">🪰</div>
+<div class="beewrap">
+    <div class="bee">🐝</div>
 </div>
 """,
     unsafe_allow_html=True,
@@ -230,8 +229,9 @@ font-family:serif;
 .scene{
 position:relative;
 width:100%;
-height:120px;
+height:100px;
 background:transparent;
+opacity:0.55;
 }
 .obj{
 position:absolute;
@@ -239,15 +239,15 @@ user-select:none;
 white-space:nowrap;
 }
 #spider{
-font-size:16px;
+font-size:14px;
 left:120px;
-top:40px;
+top:38px;
 }
 #ayah{
-font-size:12px;
-color:rgba(255,255,255,0.72);
+font-size:11px;
+color:rgba(255,255,255,0.60);
 left:300px;
-top:60px;
+top:56px;
 }
 </style>
 </head>
@@ -261,8 +261,8 @@ top:60px;
 const spider = document.getElementById("spider");
 const ayah = document.getElementById("ayah");
 
-let x1 = 120, y1 = 40, vx1 = 1.5, vy1 = 1.2;
-let x2 = 300, y2 = 60, vx2 = -1.3, vy2 = 1.1;
+let x1 = 120, y1 = 38, vx1 = 1.0, vy1 = 0.8;
+let x2 = 300, y2 = 56, vx2 = -0.9, vy2 = 0.7;
 
 function move() {
     x1 += vx1;
@@ -271,16 +271,16 @@ function move() {
     y2 += vy2;
 
     if (x1 < 0 || x1 > 800) vx1 *= -1;
-    if (y1 < 0 || y1 > 100) vy1 *= -1;
+    if (y1 < 0 || y1 > 80) vy1 *= -1;
 
     if (x2 < 0 || x2 > 800) vx2 *= -1;
-    if (y2 < 0 || y2 > 100) vy2 *= -1;
+    if (y2 < 0 || y2 > 80) vy2 *= -1;
 
     const dx = x1 - x2;
     const dy = y1 - y2;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (dist < 30) {
+    if (dist < 28) {
         vx1 *= -1;
         vy1 *= -1;
         vx2 *= -1;
@@ -297,7 +297,7 @@ move();
 </script>
 </body>
 </html>
-""", height=120)
+""", height=100)
 
 st.markdown(
     """
