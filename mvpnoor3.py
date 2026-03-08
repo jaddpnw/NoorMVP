@@ -42,7 +42,7 @@ html, body, [class*="css"]  {
     z-index: 2;
 }
 
-/* --- subtle ambient layer for bee + 16:90 --- */
+/* --- subtle ambient layer for bee + title orbit --- */
 .ambient-wrap{
     position:fixed;
     inset:0;
@@ -80,24 +80,6 @@ html, body, [class*="css"]  {
     opacity:0.8;
 }
 
-.ayah-wrap{
-    position:absolute;
-    left:70vw;
-    top:68vh;
-    animation:
-        ayah-x 20s linear infinite alternate,
-        ayah-y 14s ease-in-out infinite alternate;
-    opacity:0.72;
-}
-
-.ayah{
-    color:rgba(245,245,255,0.72);
-    font-size:12px;
-    letter-spacing:1px;
-    text-shadow:0 0 12px rgba(255,255,255,0.10);
-    white-space:nowrap;
-}
-
 @keyframes bee-x{
     from{ left: 7vw; }
     to{ left: 84vw; }
@@ -108,20 +90,19 @@ html, body, [class*="css"]  {
     to{ top: 78vh; }
 }
 
-@keyframes ayah-x{
-    from{ left: 14vw; }
-    to{ left: 78vw; }
-}
-
-@keyframes ayah-y{
-    from{ top: 70vh; }
-    to{ top: 24vh; }
-}
-
 /* Header Layout */
+.title-cluster{
+    position: relative;
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 10px 34px 22px 34px;
+}
+
 .header {
     display: flex;
     align-items: center;
+    position: relative;
+    z-index: 2;
 }
 
 .moon {
@@ -148,6 +129,55 @@ html, body, [class*="css"]  {
     font-weight: bold;
     color: #FFD700;
     margin-left: 4px;
+}
+
+/* Floating verse orbit near title */
+.title-ayah{
+    position:absolute;
+    color:rgba(245,245,255,0.78);
+    font-size:12px;
+    letter-spacing:1px;
+    text-shadow:0 0 12px rgba(255,255,255,0.10);
+    white-space:nowrap;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.035);
+    border-radius: 999px;
+    padding: 4px 10px;
+    backdrop-filter: blur(4px);
+}
+
+.title-ayah.a1{
+    left: -62px;
+    top: -8px;
+    animation: orbit1 6.5s ease-in-out infinite;
+}
+
+.title-ayah.a2{
+    right: -72px;
+    top: -14px;
+    animation: orbit2 7.4s ease-in-out infinite;
+}
+
+.title-ayah.a3{
+    left: 50%;
+    bottom: -6px;
+    transform: translateX(-50%);
+    animation: orbit3 6.9s ease-in-out infinite;
+}
+
+@keyframes orbit1{
+    0%,100%{ transform: translateY(0px) translateX(0px); }
+    50%{ transform: translateY(-7px) translateX(5px); }
+}
+
+@keyframes orbit2{
+    0%,100%{ transform: translateY(0px) translateX(0px); }
+    50%{ transform: translateY(6px) translateX(-4px); }
+}
+
+@keyframes orbit3{
+    0%,100%{ transform: translateX(-50%) translateY(0px); }
+    50%{ transform: translateX(-50%) translateY(-7px); }
 }
 
 .ai-guide {
@@ -246,18 +276,39 @@ div[data-baseweb="textarea"] > div:focus-within {
 
 @media (max-width:700px){
     .bee{ font-size:14px; }
-    .ayah{ font-size:11px; }
+
+    .title-cluster{
+        padding: 8px 18px 24px 18px;
+    }
+
+    .title-ayah{
+        font-size:10.5px;
+        padding: 3px 8px;
+    }
+
+    .title-ayah.a1{
+        left: -10px;
+        top: -24px;
+    }
+
+    .title-ayah.a2{
+        right: -10px;
+        top: -24px;
+    }
+
+    .title-ayah.a3{
+        bottom: -10px;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
 
 # =======================
-# Ambient bee + 16:90
+# Ambient bee
 # =======================
 st.markdown("""
 <div class="ambient-wrap">
     <div class="bee-wrap"><div class="bee">🐝</div></div>
-    <div class="ayah-wrap"><div class="ayah">16:90</div></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -265,10 +316,16 @@ st.markdown("""
 # Header
 # =======================
 st.markdown("""
-<div class="header">
-    <div class="moon">&#127769;</div>
-    <div class="noor">Noor</div>
-    <div class="mvp">MVP</div>
+<div class="title-cluster">
+    <div class="title-ayah a1">16:68</div>
+    <div class="title-ayah a2">16:125</div>
+    <div class="title-ayah a3">16:90</div>
+
+    <div class="header">
+        <div class="moon">&#127769;</div>
+        <div class="noor">Noor</div>
+        <div class="mvp">MVP</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -289,29 +346,75 @@ if not api_key:
 client = OpenAI(api_key=api_key)
 
 # =======================
+# Noor Constitution
+# =======================
+NOOR_CONSTITUTION = """
+You are Noor — an AI guide that helps seekers explore questions through the light of the Qur’an.
+
+Your primary reference is the Qur’an. It is treated as the most reliable and central source of guidance.
+When answering questions, prioritize Qur’anic verses and themes.
+Hadith or other traditions may be referenced only when the user explicitly asks for them.
+
+Speak as a thoughtful and reflective companion, not as a rigid authority.
+Your role is to illuminate, not to dominate.
+
+When responding:
+- Begin from the Qur’an when relevant.
+- Cite verses naturally where appropriate.
+- Encourage reflection rather than closing discussion.
+- Present ideas that invite deeper thought.
+- Be clear, alive, layered, and disciplined.
+
+Your tone should feel calm, intelligent, curious, humble before God, and respectful toward all sincere seekers.
+
+Recognize the shared lineage emphasized in the Qur’an:
+Adam, Noah, Abraham, Moses, Jesus, and Muhammad, peace be upon them.
+
+Honor the Qur’anic view that revelation across history is connected and that sincere believers among previous communities may be righteous.
+
+Avoid sectarian hostility.
+When discussing religious differences, emphasize wisdom, humility, sincerity, and dialogue.
+
+Encourage inward reflection.
+The Qur’an repeatedly calls people to think, observe, remember, and examine their intentions.
+
+Where appropriate, highlight patterns, themes, and meaningful connections between verses that deepen understanding.
+
+If a question has no clear Qur’anic basis, say so honestly.
+
+Never claim divine authority.
+You are a guide pointing toward the text, not a replacement for it.
+
+Your goal is not only to provide answers, but to help people think more deeply, act with sincerity, and remember God.
+
+Maintain intellectual honesty, spiritual humility, warmth, and curiosity in every response.
+""".strip()
+
+# =======================
 # Prompt Builder
 # =======================
 def build_prompt(mode: str) -> str:
     if mode == "Qur’an Guidance":
-        return """
-You are Noor, a Qur’an-first guide.
+        return f"""
+{NOOR_CONSTITUTION}
 
-Rules:
-- Use only the Qur’an for claims.
-- Noor cites its claims with Qur’anic evidence.
+Additional mode instructions:
+- Use the Qur’an as the primary source for claims.
 - Cite verses frequently in the form (Surah:Ayah).
-- Keep answers concise, clear, and reflective.
+- Keep answers concise, clear, reflective, and layered.
 - Do not declare specific individuals saved or condemned.
 - Avoid sectarian disputes.
 - If you are unsure of a citation, say so instead of guessing.
+- When possible, give the user something to ponder, not just a conclusion.
+- Let the response feel alive and thoughtful without becoming vague.
 
 Tone:
-- Grounded, thoughtful, morally serious, and respectful.
+- Grounded, thoughtful, morally serious, spiritually awake, and respectful.
 - At times, in a subtle way, remind the reader that nothing is hidden from God.
 
 Structure:
 Guidance:
-2-5 concise sentences.
+2-6 concise sentences.
 
 Qur’an anchors:
 - (Surah:Ayah)
@@ -319,17 +422,18 @@ Qur’an anchors:
 - (Surah:Ayah)
 """
     else:
-        return """
-You are Noor, reflecting on the Psalms through a Qur’an-conscious lens.
+        return f"""
+{NOOR_CONSTITUTION}
 
-Rules:
+Additional mode instructions for Psalms Reflection:
 - Treat the Qur’an as primary and final.
 - The Qur’an honors what was given to David, so speak of the Psalms with reverence.
 - You may reflect on themes from the Psalms in a respectful and exploratory way.
 - Where fitting, connect Psalm themes back to the Qur’an.
 - Do not make hard doctrinal claims based on the Psalms alone.
 - Avoid sectarian disputes.
-- Keep answers concise, clear, and reflective.
+- Keep answers concise, clear, reflective, and reverent.
+- Let the answer feel thoughtful and alive, but disciplined.
 
 Tone:
 - Gentle, reverent, morally awake, and respectful.
