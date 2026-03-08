@@ -42,7 +42,7 @@ html, body, [class*="css"]  {
     z-index: 2;
 }
 
-/* --- subtle ambient layer for bee + title orbit --- */
+/* --- subtle ambient layer for bee --- */
 .ambient-wrap{
     position:fixed;
     inset:0;
@@ -94,15 +94,16 @@ html, body, [class*="css"]  {
 .title-cluster{
     position: relative;
     display: inline-block;
-    margin-bottom: 4px;
-    padding: 10px 34px 22px 34px;
+    margin-bottom: 10px;
+    padding: 26px 54px 42px 54px;
+    min-height: 120px;
 }
 
 .header {
     display: flex;
     align-items: center;
     position: relative;
-    z-index: 2;
+    z-index: 3;
 }
 
 .moon {
@@ -144,40 +145,63 @@ html, body, [class*="css"]  {
     border-radius: 999px;
     padding: 4px 10px;
     backdrop-filter: blur(4px);
+    z-index: 2;
 }
 
+/* each one drifts continuously around the title zone */
 .title-ayah.a1{
-    left: -62px;
-    top: -8px;
-    animation: orbit1 6.5s ease-in-out infinite;
+    left: -10px;
+    top: 8px;
+    animation:
+        ayah1-x 8.5s linear infinite alternate,
+        ayah1-y 6.8s ease-in-out infinite alternate;
 }
 
 .title-ayah.a2{
-    right: -72px;
-    top: -14px;
-    animation: orbit2 7.4s ease-in-out infinite;
+    right: -18px;
+    top: 0px;
+    animation:
+        ayah2-x 9.2s linear infinite alternate,
+        ayah2-y 7.4s ease-in-out infinite alternate;
 }
 
 .title-ayah.a3{
     left: 50%;
-    bottom: -6px;
+    bottom: -4px;
     transform: translateX(-50%);
-    animation: orbit3 6.9s ease-in-out infinite;
+    animation:
+        ayah3-x 7.8s ease-in-out infinite alternate,
+        ayah3-y 6.6s linear infinite alternate;
 }
 
-@keyframes orbit1{
-    0%,100%{ transform: translateY(0px) translateX(0px); }
-    50%{ transform: translateY(-7px) translateX(5px); }
+@keyframes ayah1-x{
+    from{ left: -18px; }
+    to{ left: 55px; }
 }
 
-@keyframes orbit2{
-    0%,100%{ transform: translateY(0px) translateX(0px); }
-    50%{ transform: translateY(6px) translateX(-4px); }
+@keyframes ayah1-y{
+    from{ top: 2px; }
+    to{ top: 26px; }
 }
 
-@keyframes orbit3{
-    0%,100%{ transform: translateX(-50%) translateY(0px); }
-    50%{ transform: translateX(-50%) translateY(-7px); }
+@keyframes ayah2-x{
+    from{ right: -20px; }
+    to{ right: 52px; }
+}
+
+@keyframes ayah2-y{
+    from{ top: -4px; }
+    to{ top: 24px; }
+}
+
+@keyframes ayah3-x{
+    from{ transform: translateX(-62%); }
+    to{ transform: translateX(-38%); }
+}
+
+@keyframes ayah3-y{
+    from{ bottom: -10px; }
+    to{ bottom: 18px; }
 }
 
 .ai-guide {
@@ -278,7 +302,8 @@ div[data-baseweb="textarea"] > div:focus-within {
     .bee{ font-size:14px; }
 
     .title-cluster{
-        padding: 8px 18px 24px 18px;
+        padding: 22px 16px 34px 16px;
+        min-height: 120px;
     }
 
     .title-ayah{
@@ -287,17 +312,47 @@ div[data-baseweb="textarea"] > div:focus-within {
     }
 
     .title-ayah.a1{
-        left: -10px;
-        top: -24px;
+        left: 0px;
+        top: -2px;
     }
 
     .title-ayah.a2{
-        right: -10px;
-        top: -24px;
+        right: 0px;
+        top: -2px;
     }
 
     .title-ayah.a3{
-        bottom: -10px;
+        bottom: -6px;
+    }
+
+    @keyframes ayah1-x{
+        from{ left: -2px; }
+        to{ left: 24px; }
+    }
+
+    @keyframes ayah1-y{
+        from{ top: -4px; }
+        to{ top: 16px; }
+    }
+
+    @keyframes ayah2-x{
+        from{ right: -2px; }
+        to{ right: 24px; }
+    }
+
+    @keyframes ayah2-y{
+        from{ top: -4px; }
+        to{ top: 16px; }
+    }
+
+    @keyframes ayah3-x{
+        from{ transform: translateX(-58%); }
+        to{ transform: translateX(-42%); }
+    }
+
+    @keyframes ayah3-y{
+        from{ bottom: -8px; }
+        to{ bottom: 8px; }
     }
 }
 </style>
@@ -315,19 +370,22 @@ st.markdown("""
 # =======================
 # Header
 # =======================
-st.markdown("""
-<div class="title-cluster">
-    <div class="title-ayah a1">16:68</div>
-    <div class="title-ayah a2">16:125</div>
-    <div class="title-ayah a3">16:90</div>
+st.markdown(
+    """
+    <div class="title-cluster">
+        <div class="title-ayah a1">16:68</div>
+        <div class="title-ayah a2">16:125</div>
+        <div class="title-ayah a3">16:90</div>
 
-    <div class="header">
-        <div class="moon">&#127769;</div>
-        <div class="noor">Noor</div>
-        <div class="mvp">MVP</div>
+        <div class="header">
+            <div class="moon">&#127769;</div>
+            <div class="noor">Noor</div>
+            <div class="mvp">MVP</div>
+        </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown(
     '<div class="ai-guide"><i>Noor</i> is your <i>AI guide</i>, bringing <b>light</b> to your inquiries through the Quran.</div>',
