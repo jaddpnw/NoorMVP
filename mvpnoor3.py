@@ -444,6 +444,76 @@ Maintain intellectual honesty, spiritual humility, warmth, and curiosity in ever
 """.strip()
 
 # =======================
+# Shared theme library
+# =======================
+THEME_LIBRARY = {
+    "trust": {
+        "keywords": [
+            "trust", "fear", "worry", "anxious", "anxiety",
+            "unsafe", "uncertain", "burden", "rest"
+        ],
+        "quran_refs": ["13:28", "94:5-6", "3:173"],
+        "psalm_refs": ["Psalm 23:1-3", "Psalm 27:1", "Psalm 46:1-2"],
+    },
+    "mercy": {
+        "keywords": [
+            "mercy", "forgiveness", "repent", "repentance",
+            "despair", "shame", "guilt", "hope"
+        ],
+        "quran_refs": ["39:53", "7:156", "25:70"],
+        "psalm_refs": ["Psalm 103:8-10", "Psalm 51:1-2", "Psalm 130:3-4"],
+    },
+    "guidance": {
+        "keywords": [
+            "guidance", "direction", "lost", "path",
+            "clarity", "confused", "begin", "way"
+        ],
+        "quran_refs": ["1:5-6", "17:9", "2:2"],
+        "psalm_refs": ["Psalm 119:105", "Psalm 25:4-5", "Psalm 143:8"],
+    },
+    "patience": {
+        "keywords": [
+            "patience", "waiting", "delay", "endure",
+            "endurance", "trial", "sabr", "steadfast"
+        ],
+        "quran_refs": ["2:153", "3:200", "94:5-6"],
+        "psalm_refs": ["Psalm 27:14", "Psalm 37:7", "Psalm 40:1"],
+    },
+    "awe": {
+        "keywords": [
+            "creation", "sky", "heavens", "nature", "signs",
+            "wonder", "beauty", "universe", "stars"
+        ],
+        "quran_refs": ["67:3-4", "16:68-69", "3:190-191"],
+        "psalm_refs": ["Psalm 19:1-2", "Psalm 8:3-4", "Psalm 104:24"],
+    },
+    "gratitude": {
+        "keywords": [
+            "gratitude", "thankful", "thanks", "blessing",
+            "blessings", "praise", "remember"
+        ],
+        "quran_refs": ["14:7", "55:13", "2:152"],
+        "psalm_refs": ["Psalm 100:1-5", "Psalm 103:1-5", "Psalm 145:1-3"],
+    },
+    "heaviness": {
+        "keywords": [
+            "heavy", "sad", "tired", "grief", "pain",
+            "overwhelmed", "hurt", "weak", "lonely"
+        ],
+        "quran_refs": ["94:1-6", "2:286", "13:28"],
+        "psalm_refs": ["Psalm 34:18", "Psalm 42:11", "Psalm 147:3"],
+    },
+    "return": {
+        "keywords": [
+            "return", "come back", "far from god", "distance",
+            "soften", "heart", "renew", "wake up"
+        ],
+        "quran_refs": ["39:53", "57:16", "11:90"],
+        "psalm_refs": ["Psalm 51:10", "Psalm 63:1", "Psalm 143:10"],
+    },
+}
+
+# =======================
 # Starting Point clusters
 # =======================
 STARTING_POINTS = [
@@ -549,15 +619,64 @@ STARTING_POINTS = [
     },
 ]
 
+THEME_TO_CLUSTER = {
+    "trust": "trust",
+    "mercy": "mercy",
+    "guidance": "guidance",
+    "patience": "patience",
+    "awe": "creation",
+    "gratitude": "mercy",
+    "heaviness": "trust",
+    "return": "mercy",
+}
+
 # =======================
 # Helpers
 # =======================
+def detect_theme(user_text: str):
+    text = (user_text or "").strip().lower()
+    if not text:
+        return None
+
+    best_theme = None
+    best_score = 0
+
+    for theme_name, theme_data in THEME_LIBRARY.items():
+        score = sum(1 for keyword in theme_data["keywords"] if keyword in text)
+        if score > best_score:
+            best_score = score
+            best_theme = theme_name
+
+    return best_theme if best_score > 0 else None
+
+def build_theme_hint(user_text: str) -> str:
+    theme = detect_theme(user_text)
+    if not theme:
+        return ""
+
+    return f"""
+Likely theme or user need: {theme}.
+If fitting, let this gently inform verse selection, pairing, and tone without forcing the response or overriding the user's actual question.
+""".strip()
+
 def choose_starting_point(user_text: str):
     text = (user_text or "").strip().lower()
+
+    # First try cluster-native keyword matching
     if text:
         for cluster in STARTING_POINTS:
             if any(keyword in text for keyword in cluster["keywords"]):
                 return cluster
+
+    # Then use shared theme library as a quiet supplement
+    theme = detect_theme(text)
+    if theme:
+        cluster_theme = THEME_TO_CLUSTER.get(theme)
+        if cluster_theme:
+            for cluster in STARTING_POINTS:
+                if cluster["theme"] == cluster_theme:
+                    return cluster
+
     return random.choice(STARTING_POINTS)
 
 def render_starting_point(cluster: dict) -> str:
@@ -579,7 +698,9 @@ def render_starting_point(cluster: dict) -> str:
 # =======================
 # Prompt Builder
 # =======================
-def build_prompt(mode: str) -> str:
+def build_prompt(mode: str, user_text: str = "") -> str:
+    theme_hint = build_theme_hint(user_text)
+
     if mode == "Qur’an Guidance":
         return f"""
 {NOOR_CONSTITUTION}
@@ -594,6 +715,9 @@ Additional mode instructions:
 - When possible, give the user something to ponder, not just a conclusion.
 - Let the response feel alive and thoughtful without becoming vague.
 - When suggesting a verse or passage, lay out the full verse text or clear rendered meaning before explaining it.
+- Let any thematic sensitivity remain subtle and supportive rather than dominant.
+
+{theme_hint}
 
 Tone:
 - Grounded, thoughtful, morally serious, spiritually awake, and respectful.
@@ -624,6 +748,9 @@ Additional mode instructions for Psalms Reflection:
 - When recommending or discussing passages, always lay out the full Psalm passage and the full Qur’anic passage text or clear rendered meaning before the reflection.
 - Encourage the user to notice sincere praise, trust, repentance, remembrance, and devotion to God.
 - When it helps the user, suggest a Psalm and a Qur’anic passage to read side by side.
+- Let thematic sensitivity quietly guide pairing choices where fitting, without turning the response into a rigid theme match.
+
+{theme_hint}
 
 Tone:
 - Gentle, reverent, morally awake, and respectful.
@@ -653,6 +780,8 @@ Additional mode instructions for Starting Point:
 - Keep the response warm, calm, and invitational.
 - Begin with: Here is a place to begin reflecting today.
 - End with one gentle sentence inviting further reflection or a follow-up question.
+
+{theme_hint}
 """
 
 # =======================
@@ -745,7 +874,7 @@ if st.button("Seek Guidance"):
                     messages=[
                         {
                             "role": "system",
-                            "content": build_prompt(mode)
+                            "content": build_prompt(mode, user_question.strip())
                         },
                         {
                             "role": "user",
