@@ -679,20 +679,12 @@ elif mode == "Psalms Reflection":
         unsafe_allow_html=True
     )
     st.markdown(
-        '<div class="psalms-footnote">Noor occasionally reflects on the Psalms because the Qur’an affirms that David received the Zabur, and it also recalls a theme written in the Psalms. In these reflections, the Qur’an remains the primary reference and final criterion.</div>',
+        '<div class="psalms-footnote">Noor reflects on the Psalms because the Qur’an affirms the Zabur given to David, while the Qur’an remains the primary criterion.</div>',
         unsafe_allow_html=True
     )
 else:
     st.markdown(
         '<div class="method-line">Starting Point offers one Psalm and two Qur’anic passages to help you begin reflecting, even if you do not know what to ask yet.</div>',
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        '<div class="psalms-line">The Qur’an honors what was given to David, so Noor does as well. (4:163, 17:55, 21:105)</div>',
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        '<div class="psalms-footnote">Noor includes a Psalm here because the Qur’an affirms the Zabur given to David, and because the Psalms often carry prayer, praise, trust, and remembrance in a way many people can sit with personally.</div>',
         unsafe_allow_html=True
     )
 
@@ -808,4 +800,3 @@ st.markdown(
     f'<div class="rotating-verse">{featured_verses[st.session_state.verse_index]}</div>',
     unsafe_allow_html=True
 )
-
