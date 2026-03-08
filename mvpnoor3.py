@@ -42,7 +42,7 @@ html, body, [class*="css"]  {
     z-index: 2;
 }
 
-/* --- subtle ambient layer for bee --- */
+/* --- subtle ambient layer for bee + hovering verses --- */
 .ambient-wrap{
     position:fixed;
     inset:0;
@@ -66,7 +66,7 @@ html, body, [class*="css"]  {
     font-size:15px;
 }
 
-/* soft trail */
+/* soft trail restored */
 .bee-wrap::before{
     content:"";
     position:absolute;
@@ -80,6 +80,47 @@ html, body, [class*="css"]  {
     opacity:0.8;
 }
 
+/* three hovering verse refs near header zone */
+.ayah-a,
+.ayah-b,
+.ayah-c{
+    position:absolute;
+    color:rgba(245,245,255,0.72);
+    font-size:12px;
+    letter-spacing:1px;
+    text-shadow:0 0 12px rgba(255,255,255,0.10);
+    white-space:nowrap;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.035);
+    border-radius: 999px;
+    padding: 4px 10px;
+    backdrop-filter: blur(4px);
+}
+
+.ayah-a{
+    left: 10vw;
+    top: 12vh;
+    animation:
+        ayah-a-x 14s linear infinite alternate,
+        ayah-a-y 9s ease-in-out infinite alternate;
+}
+
+.ayah-b{
+    left: 66vw;
+    top: 11vh;
+    animation:
+        ayah-b-x 16s linear infinite alternate,
+        ayah-b-y 10s ease-in-out infinite alternate;
+}
+
+.ayah-c{
+    left: 39vw;
+    top: 33vh;
+    animation:
+        ayah-c-x 13s linear infinite alternate,
+        ayah-c-y 8s ease-in-out infinite alternate;
+}
+
 @keyframes bee-x{
     from{ left: 7vw; }
     to{ left: 84vw; }
@@ -90,20 +131,40 @@ html, body, [class*="css"]  {
     to{ top: 78vh; }
 }
 
-/* Header Layout */
-.title-cluster{
-    position: relative;
-    display: inline-block;
-    margin-bottom: 10px;
-    padding: 26px 54px 42px 54px;
-    min-height: 120px;
+@keyframes ayah-a-x{
+    from{ left: 6vw; }
+    to{ left: 16vw; }
 }
 
+@keyframes ayah-a-y{
+    from{ top: 11vh; }
+    to{ top: 16vh; }
+}
+
+@keyframes ayah-b-x{
+    from{ left: 62vw; }
+    to{ left: 74vw; }
+}
+
+@keyframes ayah-b-y{
+    from{ top: 10vh; }
+    to{ top: 15vh; }
+}
+
+@keyframes ayah-c-x{
+    from{ left: 34vw; }
+    to{ left: 46vw; }
+}
+
+@keyframes ayah-c-y{
+    from{ top: 30vh; }
+    to{ top: 37vh; }
+}
+
+/* Header Layout */
 .header {
     display: flex;
     align-items: center;
-    position: relative;
-    z-index: 3;
 }
 
 .moon {
@@ -130,78 +191,6 @@ html, body, [class*="css"]  {
     font-weight: bold;
     color: #FFD700;
     margin-left: 4px;
-}
-
-/* Floating verse orbit near title */
-.title-ayah{
-    position:absolute;
-    color:rgba(245,245,255,0.78);
-    font-size:12px;
-    letter-spacing:1px;
-    text-shadow:0 0 12px rgba(255,255,255,0.10);
-    white-space:nowrap;
-    border: 1px solid rgba(255,255,255,0.10);
-    background: rgba(255,255,255,0.035);
-    border-radius: 999px;
-    padding: 4px 10px;
-    backdrop-filter: blur(4px);
-    z-index: 2;
-}
-
-/* each one drifts continuously around the title zone */
-.title-ayah.a1{
-    left: -10px;
-    top: 8px;
-    animation:
-        ayah1-x 8.5s linear infinite alternate,
-        ayah1-y 6.8s ease-in-out infinite alternate;
-}
-
-.title-ayah.a2{
-    right: -18px;
-    top: 0px;
-    animation:
-        ayah2-x 9.2s linear infinite alternate,
-        ayah2-y 7.4s ease-in-out infinite alternate;
-}
-
-.title-ayah.a3{
-    left: 50%;
-    bottom: -4px;
-    transform: translateX(-50%);
-    animation:
-        ayah3-x 7.8s ease-in-out infinite alternate,
-        ayah3-y 6.6s linear infinite alternate;
-}
-
-@keyframes ayah1-x{
-    from{ left: -18px; }
-    to{ left: 55px; }
-}
-
-@keyframes ayah1-y{
-    from{ top: 2px; }
-    to{ top: 26px; }
-}
-
-@keyframes ayah2-x{
-    from{ right: -20px; }
-    to{ right: 52px; }
-}
-
-@keyframes ayah2-y{
-    from{ top: -4px; }
-    to{ top: 24px; }
-}
-
-@keyframes ayah3-x{
-    from{ transform: translateX(-62%); }
-    to{ transform: translateX(-38%); }
-}
-
-@keyframes ayah3-y{
-    from{ bottom: -10px; }
-    to{ bottom: 18px; }
 }
 
 .ai-guide {
@@ -300,92 +289,81 @@ div[data-baseweb="textarea"] > div:focus-within {
 
 @media (max-width:700px){
     .bee{ font-size:14px; }
-
-    .title-cluster{
-        padding: 22px 16px 34px 16px;
-        min-height: 120px;
-    }
-
-    .title-ayah{
-        font-size:10.5px;
+    .ayah-a, .ayah-b, .ayah-c{
+        font-size:11px;
         padding: 3px 8px;
     }
 
-    .title-ayah.a1{
-        left: 0px;
-        top: -2px;
+    .ayah-a{
+        left: 8vw;
+        top: 11vh;
     }
 
-    .title-ayah.a2{
-        right: 0px;
-        top: -2px;
+    .ayah-b{
+        left: 62vw;
+        top: 10vh;
     }
 
-    .title-ayah.a3{
-        bottom: -6px;
+    .ayah-c{
+        left: 34vw;
+        top: 28vh;
     }
 
-    @keyframes ayah1-x{
-        from{ left: -2px; }
-        to{ left: 24px; }
+    @keyframes ayah-a-x{
+        from{ left: 6vw; }
+        to{ left: 14vw; }
     }
 
-    @keyframes ayah1-y{
-        from{ top: -4px; }
-        to{ top: 16px; }
+    @keyframes ayah-a-y{
+        from{ top: 10vh; }
+        to{ top: 14vh; }
     }
 
-    @keyframes ayah2-x{
-        from{ right: -2px; }
-        to{ right: 24px; }
+    @keyframes ayah-b-x{
+        from{ left: 58vw; }
+        to{ left: 70vw; }
     }
 
-    @keyframes ayah2-y{
-        from{ top: -4px; }
-        to{ top: 16px; }
+    @keyframes ayah-b-y{
+        from{ top: 9vh; }
+        to{ top: 13vh; }
     }
 
-    @keyframes ayah3-x{
-        from{ transform: translateX(-58%); }
-        to{ transform: translateX(-42%); }
+    @keyframes ayah-c-x{
+        from{ left: 30vw; }
+        to{ left: 42vw; }
     }
 
-    @keyframes ayah3-y{
-        from{ bottom: -8px; }
-        to{ bottom: 8px; }
+    @keyframes ayah-c-y{
+        from{ top: 26vh; }
+        to{ top: 32vh; }
     }
 }
 </style>
 """, unsafe_allow_html=True)
 
 # =======================
-# Ambient bee
+# Ambient bee + hovering verses
 # =======================
 st.markdown("""
 <div class="ambient-wrap">
     <div class="bee-wrap"><div class="bee">🐝</div></div>
+    <div class="ayah-a">16:68</div>
+    <div class="ayah-b">16:125</div>
+    <div class="ayah-c">16:90</div>
 </div>
 """, unsafe_allow_html=True)
 
 # =======================
 # Header
 # =======================
-st.markdown(
-    """
-    <div class="title-cluster">
-        <div class="title-ayah a1">16:68</div>
-        <div class="title-ayah a2">16:125</div>
-        <div class="title-ayah a3">16:90</div>
-
-        <div class="header">
-            <div class="moon">&#127769;</div>
-            <div class="noor">Noor</div>
-            <div class="mvp">MVP</div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div class="header">
+    <div class="moon">&#127769;</div>
+    <div class="noor">Noor</div>
+    <div class="mvp">MVP</div>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown(
     '<div class="ai-guide"><i>Noor</i> is your <i>AI guide</i>, bringing <b>light</b> to your inquiries through the Quran.</div>',
