@@ -21,17 +21,23 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* Force full cosmic black background everywhere */
+/* Cosmic gradient background from your loading page */
 html, body, [class*="css"]  {
-    background-color: #0a0a0f !important;
+    background:
+    radial-gradient(circle at 20% 10%, rgba(120,70,255,0.20), transparent 55%),
+    radial-gradient(circle at 85% 25%, rgba(80,200,255,0.10), transparent 60%),
+    linear-gradient(180deg,#070910,#0b0b14) !important;
 }
 
 .stApp {
-    background-color: #0a0a0f !important;
+    background:
+    radial-gradient(circle at 20% 10%, rgba(120,70,255,0.20), transparent 55%),
+    radial-gradient(circle at 85% 25%, rgba(80,200,255,0.10), transparent 60%),
+    linear-gradient(180deg,#070910,#0b0b14) !important;
 }
 
 .block-container {
-    background-color: #0a0a0f !important;
+    background: transparent !important;
 }
 
 /* Header Layout */
@@ -45,7 +51,7 @@ html, body, [class*="css"]  {
     margin-right: 10px;
     display: inline-block;
     animation: spin 6s linear infinite;
-    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+    filter: drop-shadow(0 0 10px rgba(180,140,255,0.6));
 }
 
 @keyframes spin {
@@ -67,14 +73,14 @@ html, body, [class*="css"]  {
 }
 
 .ai-guide {
-    color: #C0C0C0;
+    color: #EAEAEA;
     font-size: 16px;
     margin-top: 10px;
     margin-bottom: 14px;
 }
 
 .method-line {
-    color: #BFBFBF;
+    color: #CFCFCF;
     font-size: 13px;
     margin-top: 2px;
     margin-bottom: 8px;
@@ -97,11 +103,12 @@ html, body, [class*="css"]  {
 
 /* Answer box */
 .noor-box {
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
     border-radius: 14px;
     padding: 18px;
     margin-top: 14px;
+    box-shadow: 0 0 18px rgba(255,255,255,0.03);
 }
 
 .noor-answer {
@@ -112,9 +119,9 @@ html, body, [class*="css"]  {
 
 /* Textarea style */
 div[data-baseweb="textarea"] > div {
-    background: rgba(255,255,255,0.03)!important;
+    background: rgba(255,255,255,0.04)!important;
     border-radius: 12px!important;
-    border: 1px solid rgba(255,255,255,0.10)!important;
+    border: 1px solid rgba(255,255,255,0.12)!important;
 }
 
 div[data-baseweb="textarea"] textarea {
@@ -127,17 +134,17 @@ div[data-baseweb="textarea"] textarea {
 @media (min-width:900px){
 
 div[data-baseweb="textarea"] > div{
-    background:#FFFFFF!important;
-    border:1px solid #DDD!important;
+    background: rgba(255,255,255,0.96)!important;
+    border: 1px solid #DDD!important;
 }
 
 div[data-baseweb="textarea"] textarea{
-    color:#111!important;
-    caret-color:#FFD700!important;
+    color: #111!important;
+    caret-color: #FFD700!important;
 }
 
 div[data-baseweb="textarea"] textarea::placeholder{
-    color:#777!important;
+    color: #777!important;
 }
 
 }
@@ -151,6 +158,8 @@ div[data-baseweb="textarea"] > div:focus-within {
 .stButton button {
     border-radius: 12px!important;
     border: 1px solid rgba(255,215,0,0.22)!important;
+    background: rgba(255,255,255,0.03) !important;
+    color: white !important;
 }
 
 .stButton button:hover {
@@ -332,8 +341,6 @@ if st.button("Seek Guidance"):
             st.warning("Temporary issue contacting Noor. Please try again.")
         except Exception as e:
             st.warning(f"Something went wrong: {e}")
-
-    # If empty → do nothing
 
 # =======================
 # Rotating Verses
