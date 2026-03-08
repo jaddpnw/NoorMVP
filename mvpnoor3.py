@@ -211,8 +211,16 @@ html, body, [class*="css"]  {
     color: #CFCFCF;
     font-size: 12.5px;
     margin-top: 0px;
-    margin-bottom: 14px;
+    margin-bottom: 6px;
     font-style: italic;
+}
+
+.psalms-footnote {
+    color: #BDBDBD;
+    font-size: 11.8px;
+    margin-top: 0px;
+    margin-bottom: 14px;
+    line-height: 1.5;
 }
 
 .rotating-verse {
@@ -236,6 +244,14 @@ html, body, [class*="css"]  {
     color: #F5F5F5;
     font-size: 16px;
     line-height: 1.75;
+}
+
+.noor-answer h4, .noor-answer h5 {
+    margin-bottom: 6px;
+}
+
+.noor-answer p {
+    margin-bottom: 10px;
 }
 
 /* Textarea style */
@@ -400,6 +416,7 @@ When responding:
 - Encourage reflection rather than closing discussion.
 - Present ideas that invite deeper thought.
 - Be clear, alive, layered, and disciplined.
+- Help the user form better, deeper, and more reflective questions when appropriate.
 
 Your tone should feel calm, intelligent, curious, humble before God, and respectful toward all sincere seekers.
 
@@ -427,6 +444,139 @@ Maintain intellectual honesty, spiritual humility, warmth, and curiosity in ever
 """.strip()
 
 # =======================
+# Starting Point clusters
+# =======================
+STARTING_POINTS = [
+    {
+        "theme": "trust",
+        "keywords": ["trust", "fear", "worry", "anxious", "anxiety", "unsafe", "uncertain", "burden", "heavy"],
+        "intro": "Here is a place to begin reflecting today.",
+        "psalm_ref": "Psalm 23:1–3",
+        "psalm_text": (
+            "The Lord is my shepherd; I shall not want. "
+            "He maketh me to lie down in green pastures: he leadeth me beside the still waters. "
+            "He restoreth my soul: he leadeth me in the paths of righteousness for his name's sake."
+        ),
+        "quran_ref_1": "Qur’an 13:28",
+        "quran_text_1": (
+            "Surely, in the remembrance of Allah do hearts find rest."
+        ),
+        "quran_ref_2": "Qur’an 94:5–6",
+        "quran_text_2": (
+            "So truly, with hardship comes ease. Truly, with hardship comes ease."
+        ),
+        "closing": "You might sit with these passages for a moment, or ask Noor how they speak to one another."
+    },
+    {
+        "theme": "mercy",
+        "keywords": ["mercy", "forgiveness", "repent", "despair", "shame", "return", "guilt", "hope"],
+        "intro": "Here is a place to begin reflecting today.",
+        "psalm_ref": "Psalm 103:8–10",
+        "psalm_text": (
+            "The Lord is merciful and gracious, slow to anger, and plenteous in mercy. "
+            "He will not always chide: neither will he keep his anger for ever. "
+            "He hath not dealt with us after our sins; nor rewarded us according to our iniquities."
+        ),
+        "quran_ref_1": "Qur’an 39:53",
+        "quran_text_1": (
+            "Say: O My servants who have wronged themselves, do not despair of the mercy of Allah. "
+            "Indeed, Allah forgives all sins. Indeed, He is the Most Forgiving, the Most Merciful."
+        ),
+        "quran_ref_2": "Qur’an 7:156",
+        "quran_text_2": (
+            "My mercy encompasses all things."
+        ),
+        "closing": "You may also ask Noor what these passages reveal about returning to God without despair."
+    },
+    {
+        "theme": "creation",
+        "keywords": ["creation", "sky", "heavens", "nature", "signs", "wonder", "beauty", "universe"],
+        "intro": "Here is a place to begin reflecting today.",
+        "psalm_ref": "Psalm 19:1–2",
+        "psalm_text": (
+            "The heavens declare the glory of God; and the firmament sheweth his handiwork. "
+            "Day unto day uttereth speech, and night unto night sheweth knowledge."
+        ),
+        "quran_ref_1": "Qur’an 67:3–4",
+        "quran_text_1": (
+            "He who created seven heavens in layers. You do not see any inconsistency in the creation of the Most Merciful. "
+            "So return your vision: do you see any breaks? Then return your vision twice again; your vision will return to you humbled and weary."
+        ),
+        "quran_ref_2": "Qur’an 16:68–69",
+        "quran_text_2": (
+            "And your Lord inspired the bee: Take for yourself among the mountains houses, and among the trees and what they build. "
+            "Then eat from all fruits and follow the ways of your Lord laid down for you. "
+            "From within them comes a drink of varying colors, in which there is healing for people. "
+            "Indeed, in that is a sign for people who reflect."
+        ),
+        "closing": "You might also ask Noor how creation becomes a form of remembrance in these passages."
+    },
+    {
+        "theme": "guidance",
+        "keywords": ["guidance", "direction", "lost", "begin", "path", "clarity", "confused"],
+        "intro": "Here is a place to begin reflecting today.",
+        "psalm_ref": "Psalm 119:105",
+        "psalm_text": (
+            "Thy word is a lamp unto my feet, and a light unto my path."
+        ),
+        "quran_ref_1": "Qur’an 1:5–6",
+        "quran_text_1": (
+            "You alone we worship, and You alone we ask for help. Guide us to the straight path."
+        ),
+        "quran_ref_2": "Qur’an 17:9",
+        "quran_text_2": (
+            "Indeed, this Qur’an guides to that which is most upright."
+        ),
+        "closing": "You might ask Noor what kind of guidance these passages are pointing you toward right now."
+    },
+    {
+        "theme": "patience",
+        "keywords": ["patience", "waiting", "delay", "endure", "endurance", "trial", "sabr"],
+        "intro": "Here is a place to begin reflecting today.",
+        "psalm_ref": "Psalm 27:14",
+        "psalm_text": (
+            "Wait on the Lord: be of good courage, and he shall strengthen thine heart: wait, I say, on the Lord."
+        ),
+        "quran_ref_1": "Qur’an 2:153",
+        "quran_text_1": (
+            "O you who believe, seek help through patience and prayer. Indeed, Allah is with the patient."
+        ),
+        "quran_ref_2": "Qur’an 3:200",
+        "quran_text_2": (
+            "O you who believe, be steadfast, outdo one another in steadfastness, remain firm, and be mindful of Allah so that you may succeed."
+        ),
+        "closing": "You might sit with the kind of strength these passages call for, and ask Noor where patience meets trust."
+    },
+]
+
+# =======================
+# Helpers
+# =======================
+def choose_starting_point(user_text: str):
+    text = (user_text or "").strip().lower()
+    if text:
+        for cluster in STARTING_POINTS:
+            if any(keyword in text for keyword in cluster["keywords"]):
+                return cluster
+    return random.choice(STARTING_POINTS)
+
+def render_starting_point(cluster: dict) -> str:
+    return f"""
+<h4>{cluster["intro"]}</h4>
+
+<p><b>{cluster["psalm_ref"]}</b><br>
+{cluster["psalm_text"]}</p>
+
+<p><b>{cluster["quran_ref_1"]}</b><br>
+{cluster["quran_text_1"]}</p>
+
+<p><b>{cluster["quran_ref_2"]}</b><br>
+{cluster["quran_text_2"]}</p>
+
+<p><i>{cluster["closing"]}</i></p>
+""".strip()
+
+# =======================
 # Prompt Builder
 # =======================
 def build_prompt(mode: str) -> str:
@@ -443,6 +593,7 @@ Additional mode instructions:
 - If you are unsure of a citation, say so instead of guessing.
 - When possible, give the user something to ponder, not just a conclusion.
 - Let the response feel alive and thoughtful without becoming vague.
+- When suggesting a verse or passage, lay out the full verse text or clear rendered meaning before explaining it.
 
 Tone:
 - Grounded, thoughtful, morally serious, spiritually awake, and respectful.
@@ -457,19 +608,22 @@ Qur’an anchors:
 - (Surah:Ayah)
 - (Surah:Ayah)
 """
-    else:
+    elif mode == "Psalms Reflection":
         return f"""
 {NOOR_CONSTITUTION}
 
 Additional mode instructions for Psalms Reflection:
 - Treat the Qur’an as primary and final.
-- The Qur’an honors what was given to David, so speak of the Psalms with reverence.
+- The Qur’an honors what was given to David, so Noor does as well.
 - You may reflect on themes from the Psalms in a respectful and exploratory way.
 - Where fitting, connect Psalm themes back to the Qur’an.
 - Do not make hard doctrinal claims based on the Psalms alone.
 - Avoid sectarian disputes.
 - Keep answers concise, clear, reflective, and reverent.
 - Let the answer feel thoughtful and alive, but disciplined.
+- When recommending or discussing passages, always lay out the full Psalm passage and the full Qur’anic passage text or clear rendered meaning before the reflection.
+- Encourage the user to notice sincere praise, trust, repentance, remembrance, and devotion to God.
+- When it helps the user, suggest a Psalm and a Qur’anic passage to read side by side.
 
 Tone:
 - Gentle, reverent, morally awake, and respectful.
@@ -478,12 +632,27 @@ Structure:
 Guidance:
 2-5 concise sentences.
 
+Passages to reflect on:
+- Full Psalm passage
+- Full Qur’anic passage
+
 Qur’anic resonance:
 - (Surah:Ayah)
 - (Surah:Ayah)
 
-Psalm thread:
-- Briefly mention the Psalm theme or idea being explored.
+Closing:
+- One gentle question or one suggested next question the user could ask.
+"""
+    else:
+        return f"""
+{NOOR_CONSTITUTION}
+
+Additional mode instructions for Starting Point:
+- Offer one Psalm passage, one Qur’anic passage, and one additional Qur’anic passage.
+- Lay out the full passage text or clear rendered meaning for each before any reflection.
+- Keep the response warm, calm, and invitational.
+- Begin with: Here is a place to begin reflecting today.
+- End with one gentle sentence inviting further reflection or a follow-up question.
 """
 
 # =======================
@@ -491,7 +660,7 @@ Psalm thread:
 # =======================
 mode = st.radio(
     "Mode",
-    ["Qur’an Guidance", "Psalms Reflection"],
+    ["Qur’an Guidance", "Psalms Reflection", "Starting Point"],
     horizontal=True
 )
 
@@ -500,13 +669,30 @@ if mode == "Qur’an Guidance":
         '<div class="method-line">Noor cites its claims with Qur’anic evidence.</div>',
         unsafe_allow_html=True
     )
-else:
+elif mode == "Psalms Reflection":
     st.markdown(
         '<div class="method-line">Noor explores the Psalms with reverence through a Qur’an-conscious lens.</div>',
         unsafe_allow_html=True
     )
     st.markdown(
-        '<div class="psalms-line">The Qur’an honors what was given to David, so we should too. (17:55)</div>',
+        '<div class="psalms-line">The Qur’an honors what was given to David, so Noor does as well. (4:163, 17:55, 21:105)</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="psalms-footnote">Noor occasionally reflects on the Psalms because the Qur’an affirms that David received the Zabur, and it also recalls a theme written in the Psalms. In these reflections, the Qur’an remains the primary reference and final criterion.</div>',
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        '<div class="method-line">Starting Point offers one Psalm and two Qur’anic passages to help you begin reflecting, even if you do not know what to ask yet.</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="psalms-line">The Qur’an honors what was given to David, so Noor does as well. (4:163, 17:55, 21:105)</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="psalms-footnote">Noor includes a Psalm here because the Qur’an affirms the Zabur given to David, and because the Psalms often carry prayer, praise, trust, and remembrance in a way many people can sit with personally.</div>',
         unsafe_allow_html=True
     )
 
@@ -515,17 +701,24 @@ else:
 # =======================
 if mode == "Qur’an Guidance":
     placeholder_prompts = [
-        "What verse speaks about patience?",
-        "Where is mercy described most beautifully?",
-        "What does the Quran say about hardship?",
-        "What are the mysterious letters in 29 chapters?",
+        "Give me a verse to reflect on today.",
+        "What is a verse that might help me see myself more clearly?",
+        "What should I read when my heart feels heavy?",
+        "What is a good verse to carry with me today?",
+    ]
+elif mode == "Psalms Reflection":
+    placeholder_prompts = [
+        "Give me a Psalm and a Qur’anic verse to reflect on today.",
+        "What Psalm should I carry in my heart today with the Qur’an?",
+        "Show me a Psalm and a verse that speak to trust in God.",
+        "Give me something beautiful from the Psalms and Qur’an to sit with.",
     ]
 else:
     placeholder_prompts = [
-        "What in the Psalms resonates with trust in God?",
-        "How do the Psalms speak about fear and refuge?",
-        "How might the Psalms and the Quran both speak of praise?",
-        "What Psalm themes echo humility before God?",
+        "Leave this blank, or write a word like mercy, trust, patience, or guidance.",
+        "You can simply press the button and Noor will offer a place to begin.",
+        "Try a word like fear, hope, repentance, or gratitude.",
+        "Or just let Noor choose a place to begin reflecting today.",
     ]
 
 # =======================
@@ -542,10 +735,18 @@ user_question = st.text_area(
 # Response
 # =======================
 if st.button("Seek Guidance"):
+    try:
+        if mode == "Starting Point":
+            cluster = choose_starting_point(user_question)
+            answer = render_starting_point(cluster)
 
-    if user_question and user_question.strip():
+            st.markdown("### Your Guidance:")
+            st.markdown(
+                f'<div class="noor-box"><div class="noor-answer">{answer}</div></div>',
+                unsafe_allow_html=True
+            )
 
-        try:
+        elif user_question and user_question.strip():
             with st.spinner("Noor is reflecting..."):
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
@@ -570,10 +771,13 @@ if st.button("Seek Guidance"):
                 unsafe_allow_html=True
             )
 
-        except (APIError, RateLimitError, APITimeoutError):
-            st.warning("Temporary issue contacting Noor. Please try again.")
-        except Exception as e:
-            st.warning(f"Something went wrong: {e}")
+        else:
+            st.warning("Please enter a question, or choose Starting Point to begin without one.")
+
+    except (APIError, RateLimitError, APITimeoutError):
+        st.warning("Temporary issue contacting Noor. Please try again.")
+    except Exception as e:
+        st.warning(f"Something went wrong: {e}")
 
 # =======================
 # Rotating Verses
@@ -604,3 +808,4 @@ st.markdown(
     f'<div class="rotating-verse">{featured_verses[st.session_state.verse_index]}</div>',
     unsafe_allow_html=True
 )
+
